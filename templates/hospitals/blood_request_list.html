@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% block title %}Blood Requests{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{max-width:1100px;margin:auto;}
+.header{background:linear-gradient(135deg,#dc2626,#991b1b);color:white;padding:24px;border-radius:16px;margin-bottom:20px;}
+.card{background:#fff;border:1px solid #b80000;border-radius:16px;padding:22px;box-shadow:0 8px 25px rgba(0,0,0,.06);margin-bottom:20px;}
+.top-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.btn{background:#dc2626;color:white;padding:10px 16px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;font-weight:600;}
+.btn:hover{background:#b91c1c;}
+.btn-light{background:white;color:#555;border:1px solid #ddd;}
+.btn-light:hover{background:#f3f4f6;}
+.btn-cancel{background:#991b1b;color:white;padding:8px 12px;border:none;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;}
+.form-card{display:none;}
+.form-card.show{display:block;}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+.field.full{grid-column:span 2;}
+label{display:block;font-weight:600;margin-bottom:6px;color:#374151;}
+input,select,textarea{width:100%;padding:11px;border:1px solid #ddd;border-radius:9px;}
+input:focus,select:focus,textarea:focus{border-color:#dc2626;outline:none;box-shadow:0 0 0 3px rgba(220,38,38,.15);}
+.section-box{background:#fff7f7;border:1px solid #fecaca;border-radius:14px;padding:16px;margin-bottom:18px;}
+.radio-group{display:flex;gap:16px;flex-wrap:wrap;}
+.radio-option{display:flex;align-items:center;gap:8px;background:white;border:1px solid #e5e7eb;padding:10px 14px;border-radius:10px;cursor:pointer;}
+.profile-btn{background:#dc2626;color:white;padding:10px 14px;border:none;border-radius:10px;cursor:pointer;font-weight:600;margin-bottom:14px;}
+.hidden{display:none;}
+.table-wrap{width:100%;overflow-x:auto;}
+table{width:100%;min-width:1000px;border-collapse:collapse;}
+th,td{padding:13px;border-bottom:1px solid #eee;text-align:left;}
+th{background:#fff7f7;color:#b91c1c;}
+.badge{padding:5px 11px;border-radius:999px;font-size:12px;font-weight:700;}
+.badge-critical{background:#fee2e2;color:#b91c1c;}
+.badge-urgent{background:#fef3c7;color:#92400e;}
+.badge-normal{background:#f3f4f6;color:#374151;}
+.status{background:#e0f2fe;color:#0369a1;}
+.status-cancelled{background:#fee2e2;color:#991b1b;}
+.empty{color:#6b7280;}
+@media(max-width:768px){
+    .page-container{padding:0 12px;}
+    .header{padding:18px;}
+    .form-grid{grid-template-columns:1fr;}
+    .field.full{grid-column:span 1;}
+    .btn,.btn-light{width:100%;text-align:center;}
+}
+</style>
+
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <div class="header">
+        <h2><strong>Blood Requests</strong></h2>
+        <p>Create and track hospital blood requests sent to matching donors.</p>
+    </div>
+
+    
+
+            <button type="button" class="btn" onclick="showCreateForm()">
+                + Create Blood Request
+            </button>
+      
+
+    <!-- CREATE FORM -->
+       <br>   <br>    
+    <div id="createFormCard" class="card form-card">
+
+        <h3 style="font-size:20px;font-weight:700;color:#991b1b;margin-bottom:18px;">
+            Create New Blood Request
+        </h3>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="section-box">
+                <label>Request Type</label>
+
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="request_for" value="hospital" checked onchange="togglePatientField()">
+                        Hospital Request
+                    </label>
+
+                    <label class="radio-option">
+                        <input type="radio" name="request_for" value="patient" onchange="togglePatientField()">
+                        Patient Request
+                    </label>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <label>Request Owner</label>
+
+                <div class="form-grid">
+                    <div>
+                        <label>Hospital Name</label>
+                        <input type="text" name="hospital_name" value="{{ hp.hospital_name }}" readonly>
+                    </div>
+
+                    <div id="patientField" class="hidden">
+                        <label>Patient Name</label>
+                        <input type="text" name="patient_name" placeholder="Enter patient name">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-box">
+                <label>Request Address</label>
+
+                <button type="button" class="profile-btn" onclick="useProfileAddress()">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Use Profile Address
+                </button>
+
+                <div class="form-grid">
+                    <div>
+                        <label>City</label>
+                        <input type="text" id="city" name="city" value="{{ hp.city }}" placeholder="City">
+                    </div>
+
+                    <div>
+                        <label>Address</label>
+                        <input type="text" id="address" name="hospital_address" value="{{ hp.address }}" placeholder="Address">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                {% for field in form %}
+                    {% if field.name != 'city' and field.name != 'hospital_address' and field.name != 'patient_name' %}
+                        <div class="{% if field.name == 'notes' %}field full{% endif %}">
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+
+                            {% if field.errors %}
+                                <small style="color:#dc2626;">{{ field.errors|striptags }}</small>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <button type="submit" class="btn">Create Request</button>
+
+            <button type="button" class="btn btn-light" onclick="showRequestsTable()">
+                Cancel
+            </button>
+
+        </form>
+    </div>
+
+    <!-- REQUESTS TABLE -->
+    <div id="requestsTableCard" class="card">
+
+        <h3 style="font-size:20px;font-weight:700;color:#991b1b;margin-bottom:18px;">
+            Created Requests
+        </h3>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Owner</th>
+                        <th>Blood Type</th>
+                        <th>Units</th>
+                        <th>Urgency</th>
+                        <th>City</th>
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td>{{ req.patient_name|default:req.hospital.hospital_name }}</td>
+                        <td><strong>{{ req.blood_type }}</strong></td>
+                        <td>{{ req.required_units }}</td>
+
+                        <td>
+                            {% if req.urgency == "CRITICAL" %}
+                                <span class="badge badge-critical">CRITICAL</span>
+                            {% elif req.urgency == "URGENT" %}
+                                <span class="badge badge-urgent">URGENT</span>
+                            {% else %}
+                                <span class="badge badge-normal">NORMAL</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ req.city }}</td>
+                        <td>{{ req.hospital_address|default:"—" }}</td>
+
+                        <td>
+                            {% if req.status == "CANCELLED" %}
+                                <span class="badge status-cancelled">{{ req.status }}</span>
+                            {% else %}
+                                <span class="badge status">{{ req.status }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ req.created_at|date:"M d, Y - h:i A" }}</td>
+
+                        <td>
+                            {% if req.status != "CANCELLED" %}
+                                <form method="post" action="{% url 'hospital_request_cancel' req.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-cancel"
+                                            onclick="return confirm('Are you sure you want to cancel this request?');">
+                                        Cancel
+                                    </button>
+                                </form>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="empty">
+                            No blood requests created yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function showCreateForm(){
+    document.getElementById("createFormCard").classList.add("show");
+    document.getElementById("requestsTableCard").style.display = "none";
+
+    document.getElementById("createFormCard").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+function showRequestsTable(){
+    document.getElementById("createFormCard").classList.remove("show");
+    document.getElementById("requestsTableCard").style.display = "block";
+}
+
+function togglePatientField(){
+    const selected = document.querySelector('input[name="request_for"]:checked').value;
+    const patientField = document.getElementById("patientField");
+
+    if(selected === "patient"){
+        patientField.classList.remove("hidden");
+    }else{
+        patientField.classList.add("hidden");
+    }
+}
+
+function useProfileAddress(){
+    const profileCity = "{{ hp.city|escapejs }}";
+    const profileAddress = "{{ hp.address|escapejs }}";
+
+    document.getElementById("city").value = profileCity;
+    document.getElementById("address").value = profileAddress;
+
+    alert("Profile address added successfully.");
+}
+</script>
+
+{% endblock %}

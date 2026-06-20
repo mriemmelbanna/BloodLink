@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+{% block title %}Donor Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+.card {
+  background: #fff;
+  border: 1px solid  #b80000;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.grid {
+  display: grid;
+  gap: 15px;
+}
+
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.header {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: white;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #786b6b;
+  margin-top: 5px;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: auto;
+
+}
+
+.badge.green {
+    background: #d1fae5;   /* أخضر فاتح */
+    color: #047857;        /* أخضر غامق */
+    padding: 8px 18px;
+    border-radius: 999px;  /* pill shape */
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.badge.gray {
+    background: #f9d4d4;   /* أخضر فاتح */
+    color: #dc2626;        /* أخضر غامق */
+    padding: 8px 18px;
+    border-radius: 999px;  /* pill shape */
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.empty-state {
+  color: #9ca3af;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.activity {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.activity-box {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+  flex: 1;
+}
+
+.activity-box:last-child {
+  border-bottom: none;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 8px;
+}
+
+.dot.red { background: #ef4444; }
+.dot.gray { background: #9ca3af; }
+
+.impact {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.impact h3 {
+  color: #b91c1c;
+  margin-bottom: 5px;
+}
+/* =========================
+   📱 MOBILE
+========================= */
+@media (max-width: 768px){
+
+  .header{
+    flex-direction:column;
+    gap:10px;
+    align-items:flex-start;
+  }
+
+  .title{
+    font-size:18px;
+  }
+
+  /* بدل 4 كروت → عمود واحد */
+  .grid-4{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:15px;
+  }
+
+  .card-header{
+    flex-direction:row;
+    justify-content:space-between;
+  }
+
+  .activity{
+    flex-direction:row;
+  }
+
+  .impact{
+    flex-direction:column;
+    gap:15px;
+  }
+
+}
+
+
+/* =========================
+   📱 TABLET
+========================= */
+@media (min-width: 769px) and (max-width: 1024px){
+
+  /* بدل 4 → 2 */
+  .grid-4{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .header{
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .impact{
+    flex-direction:row;
+    align-items:center;
+  }
+
+}
+
+</style>
+
+<div class="mb-6">
+  {% include "donors/donor_subnav.html" with active_tab="dashboard" %}
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="title">
+      Welcome back, {{ profile.full_name|default:user.username }}
+    </div>
+    <div class="text-muted" style="color: #ffffff;">Your donation dashboard</div>
+  </div>
+
+  <div class="badge {% if final_available %}green{% else %}gray{% endif %}">
+  {% if final_available %}
+    Available
+  {% else %}
+    Not Available
+  {% endif %}
+</div>
+</div>
+
+<!-- Stats -->
+<div class="grid grid-4">
+
+  <!-- Blood Type -->
+  <div class="card">
+    <div class="card-header">
+      <p class="text-muted">Blood Type</p>
+      <i class="fa-solid fa-droplet text-red-500"></i>
+    </div>
+
+    {% if stats.blood_type %}
+      <p class="title">{{ stats.blood_type }}</p>
+    {% else %}
+      <p class="empty-state">
+        <i class="fa-regular fa-circle-question"></i>
+        Not specified yet
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Last Donation -->
+  <div class="card">
+    <div class="card-header">
+      <p class="text-muted">Last Donation</p>
+      <i class="fa-regular fa-calendar text-gray-500"></i>
+    </div>
+
+    {% if stats.last_donation %}
+      <p class="title" style="font-size:16px">{{ stats.last_donation }}</p>
+    {% else %}
+      <p class="empty-state">
+        <i class="fa-regular fa-clock"></i>
+        No donation history yet
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Total Donations -->
+  <div class="card">
+    <div class="card-header">
+      <p class="text-muted">Total Donations</p>
+      <i class="fa-solid fa-award text-red-500"></i>
+    </div>
+
+    {% if stats.total_donations %}
+      <p class="title">{{ stats.total_donations }}</p>
+    {% else %}
+      <p class="empty-state">
+        <i class="fa-regular fa-circle-info"></i>
+        No donations yet
+      </p>
+    {% endif %}
+  </div>
+
+  <!-- Next Eligible -->
+  <div class="card">
+    <div class="card-header">
+      <p class="text-muted">Next Eligible</p>
+      <i class="fa-regular fa-clock text-gray-500"></i>
+    </div>
+
+    {% if stats.next_eligible %}
+      <p class="title" style="font-size:16px">{{ stats.next_eligible }}</p>
+    {% else %}
+      <p class="empty-state">
+        <i class="fa-regular fa-hourglass"></i>
+        Not calculated yet
+      </p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Activity -->
+<div class="card" style="margin-top:20px;">
+  <h3>Recent Activity</h3>
+
+  <div style="margin-top:15px;">
+
+  {% for item in recent_activity %}
+  <div class="activity">
+    <div class="dot red"></div>
+
+    <div class="activity-box">
+      <p><strong>{{ item.title }}</strong></p>
+
+      <p class="text-muted">
+        {{ item.details }}  {{ item.created_at|date:"F d, Y - h:i A" }}
+      </p>
+
+      <p class="text-muted">
+        
+      </p>
+    </div>
+  </div>
+{% empty %}
+  <p class="empty-state">
+    <i class="fa-regular fa-folder-open"></i>
+    No recent activity yet
+  </p>
+{% endfor %}
+
+  </div>
+</div>
+
+<!-- Impact -->
+{% if impact_lives %}
+<div class="impact" style="margin-top:20px;">
+  <div>
+    <h3>Your Impact</h3>
+    <p>
+      You've helped save up to <strong>{{ stats.total_donations }}</strong> lives
+    </p>
+    <p class="text-muted">
+      Each blood donation can help save up to <strong>{{ stats.total_donations }}</strong> lives
+    </p>
+  </div>
+
+  <i class="fa-solid fa-award" style="color:#f87171; font-size:28px;"></i>
+</div>
+{% endif %}
+
+{% endblock %}

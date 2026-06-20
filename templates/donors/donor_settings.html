@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block title %}Availability Settings{% endblock %}
+
+{% block content %}
+
+<style>
+.card {
+  background: #fff;
+  border: 1px solid #b80000;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.section-title {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.setting-box {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text-muted {
+  color: #777;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.input-field {
+  width: 100%;
+  background: #f9fafb;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #f87171;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: white;
+}
+
+.btn:hover {
+  background: #f3f4f6;
+}
+
+.btn-primary {
+  background: #dc2626;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #b91c1c;
+}
+
+.switch {
+  position: relative;
+  width: 45px;
+  height: 24px;
+}
+
+.switch input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  background: #ccc;
+  border-radius: 50px;
+  width: 100%;
+  height: 100%;
+  transition: 0.3s;
+}
+
+.slider::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: 0.3s;
+}
+
+.switch input:checked + .slider {
+  background: #dc2626;
+}
+
+.switch input:checked + .slider::after {
+  transform: translateX(21px);
+}
+
+/* Warning */
+.warning {
+  color: red;
+  font-size: 13px;
+  margin-top: 10px;
+}
+</style>
+
+
+<div class="mb-6">
+  {% include "donors/donor_subnav.html" with active_tab="profile" %}
+</div>
+
+<div class="card">
+  <h2 class="section-title">Availability Settings</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- 🔥 Hidden Last Donation Date -->
+    <input type="hidden" id="lastDonationDate"
+           value="{{ profile.last_donation_date|default:'' }}">
+
+    <!-- Availability -->
+    <div class="setting-box" id="availabilityBox">
+      <div>
+        <p><strong>Available for Donations</strong></p>
+        <p class="text-muted">Toggle your availability to receive donation requests</p>
+      </div>
+
+      <label class="switch">
+        <input type="checkbox" id="availabilityToggle" name="is_available"
+               {% if profile.is_available %}checked{% endif %}>
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Distance -->
+    <div style="margin-top:20px;">
+      <label>Maximum Distance (km)</label>
+      <input type="number" min="1" name="max_distance_km"
+             value="{{ profile.max_distance_km }}"
+             class="input-field">
+
+      <p class="text-muted">
+        We'll only notify you about requests within this distance
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <a href="{% url 'donor_profile' %}" class="btn">Cancel</a>
+      <button class="btn btn-primary">Save Changes</button>
+    </div>
+
+  </form>
+</div>
+
+
+<!-- 🔥 JavaScript -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const dateValue = document.getElementById("lastDonationDate").value;
+  const toggle = document.getElementById("availabilityToggle");
+  const box = document.getElementById("availabilityBox");
+
+  if (!dateValue || !toggle) return;
+
+  const lastDonation = new Date(dateValue);
+  const today = new Date();
+
+  const diffTime = today - lastDonation;
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+  if (diffDays < 90) {
+    toggle.checked = false;
+    toggle.disabled = true;
+
+    const warning = document.createElement("p");
+    warning.className = "warning";
+    warning.innerText = "Not eligible yet (less than 3 months since last donation).";
+
+    box.appendChild(warning);
+  }
+
+});
+</script>
+
+{% endblock %}

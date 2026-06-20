@@ -1,0 +1,575 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+body{
+    font-family:sans-serif;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main-title{
+    font-size:48px;
+    font-weight:700;
+    color:#dc2626;
+    margin-bottom:12px;
+}
+
+.main-subtitle{
+    margin-bottom:40px;
+    color:#4b5563;
+    font-size:18px;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.hero-section,
+.how-section,
+.who-section,
+.cta-section{
+    padding:64px 0;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero-wrapper{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+    position:relative;
+}
+
+.hero-left{
+    flex:1;
+    z-index:2;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:10px 20px;
+    border-radius:999px;
+    font-weight:500;
+    margin-bottom:24px;
+}
+
+.hero-title{
+    font-size:48px;
+    font-weight:800;
+    color:#0f172a;
+    margin-bottom:24px;
+}
+
+.hero-text{
+    font-size:20px;
+    color:#4b5563;
+    max-width:768px;
+    margin-bottom:40px;
+    line-height:1.7;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+}
+
+.btn{
+    padding:16px 32px;
+    border-radius:14px;
+    text-decoration:none;
+    font-size:18px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-3px);
+}
+
+.btn-red{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-red:hover{
+    background:#b91c1c;
+}
+
+.btn-outline{
+    border:2px solid #d1d5db;
+    color:#111827;
+    background:white;
+}
+
+.btn-outline:hover{
+    border-color:#dc2626;
+    color:#dc2626;
+}
+
+.btn-dark{
+    background:#1e293b;
+    color:white;
+}
+
+.btn-dark:hover{
+    background:#0f172a;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats-section{
+    padding:64px 0;
+    background:white;
+    border-radius:20px;
+    box-shadow:0 1px 10px rgba(0,0,0,.06);
+    margin-top:80px;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:32px;
+    text-align:center;
+}
+
+.stats-grid h3{
+    font-size:36px;
+    font-weight:700;
+    color:#dc2626;
+}
+
+.stats-grid p{
+    color:#6b7280;
+    margin-top:8px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.how-section h2,
+.who-section h2,
+.cta-section h2{
+    font-size:36px;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:48px;
+}
+
+.cards-3,
+.cards-2{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:40px;
+}
+
+.card{
+    background:white;
+    padding:32px;
+    border-radius:18px;
+    box-shadow:0 4px 14px rgba(0,0,0,.06);
+    text-align:center;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+.card i{
+    font-size:36px;
+    color:#dc2626;
+    margin-bottom:16px;
+}
+
+.card h3{
+    font-size:20px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#6b7280;
+    line-height:1.7;
+}
+
+.card a{
+    color:#dc2626;
+    font-weight:600;
+    text-decoration:none;
+}
+
+/* =========================
+   WHO SECTION
+========================= */
+
+.who-section{
+    background:#f3f4f6;
+    border-radius:20px;
+    padding:60px 40px;
+    margin-top:70px;
+}
+
+/* =========================
+   CTA
+========================= */
+
+.cta-section{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    border-radius:20px;
+    text-align:center;
+    margin-top:80px;
+}
+
+.cta-section p{
+    font-size:18px;
+    margin-bottom:32px;
+}
+
+.center{
+    justify-content:center;
+}
+
+.btn-white{
+    background:white;
+    color:#dc2626;
+}
+
+.btn-white:hover{
+    background:#f9fafb;
+}
+
+.btn-border{
+    border:2px solid white;
+    color:white;
+}
+
+.btn-border:hover{
+    background:white;
+    color:#dc2626;
+}
+
+/* =========================
+   IMAGE
+========================= */
+
+.floating-image{
+    position:absolute;
+    top:100px;
+    right:20px;
+    animation:float 4s ease-in-out infinite;
+}
+
+.hero-image{
+    width:430px;
+    max-width:100%;
+    filter:drop-shadow(0 15px 25px rgba(0,0,0,.15));
+}
+
+@keyframes float{
+    0%{transform:translateY(0);}
+    50%{transform:translateY(-12px);}
+    100%{transform:translateY(0);}
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px){
+
+    .main-title{
+        font-size:32px;
+        text-align:center;
+    }
+
+    .main-subtitle{
+        text-align:center;
+        padding:0 10px;
+        font-size:16px;
+    }
+
+    .hero-title{
+        font-size:30px;
+        text-align:center;
+    }
+
+    .hero-text{
+        font-size:16px;
+        text-align:center;
+        margin:auto;
+    }
+
+    .btn-group{
+        justify-content:center;
+    }
+
+    .hero-wrapper{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .floating-image{
+        display:none;
+    }
+
+    .stats-grid{
+        grid-template-columns:1fr 1fr;
+        gap:20px;
+    }
+
+    .cards-3,
+    .cards-2{
+        grid-template-columns:1fr;
+    }
+
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (min-width:769px) and (max-width:1024px){
+
+    .hero-wrapper{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .floating-image{
+        display:none;
+    }
+
+    .stats-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .cards-3,
+    .cards-2{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+</style>
+
+
+<h1 class="main-title">Welcome to Bloodlink Platform</h1>
+
+<p class="main-subtitle">
+Save lives by donating blood. Search donors or request blood today!
+</p>
+
+<!-- IMAGE -->
+<div class="floating-image">
+    <img src="{% static 'images/blood.png' %}" class="hero-image">
+</div>
+
+<!-- HERO -->
+<section class="hero-section">
+
+<div class="hero-wrapper">
+
+    <div class="hero-left">
+
+        <div class="badge">
+            <i class="fa-regular fa-heart"></i>
+            Save Lives by Donating Blood
+        </div>
+
+        <h1 class="hero-title">Bloodlink platform</h1>
+
+        <p class="hero-text">
+            Connecting donors and patients instantly through matching.
+            Reduce waiting times, save more lives, and make blood donation more efficient than ever.
+        </p>
+
+        <div class="btn-group">
+
+            {% if not user.is_authenticated %}
+
+                <a href="{% url 'donor_register' %}" class="btn btn-red">
+                    <i class="fa-regular fa-heart"></i>
+                    Register as Donor
+                </a>
+
+                <a href="{% url 'donor_list' %}" class="btn btn-outline">
+                    <i class="fa-solid fa-users"></i>
+                    Find Blood
+                </a>
+
+                <a href="{% url 'hospital_register' %}" class="btn btn-dark">
+                    <i class="fa-solid fa-hospital"></i>
+                    Register as Hospital
+                </a>
+
+            {% elif user.donor_profile %}
+
+                <a href="{% url 'donor_nearby_requests' %}" class="btn btn-red">
+                    <i class="fa-solid fa-hand-holding-droplet"></i>
+                    Donate Now
+                </a>
+
+            {% elif user.patient_profile %}
+
+                <a href="{% url 'donor_list' %}" class="btn btn-outline">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Find Blood
+                </a>
+
+                <a href="{% url 'create_request' %}" class="btn btn-red">
+                    <i class="fa-solid fa-droplet"></i>
+                    Request Blood
+                </a>
+
+            {% elif user.hospital_profile %}
+
+                <a href="{% url 'hospital_dashboard' %}" class="btn btn-dark">
+                    <i class="fa-solid fa-chart-line"></i>
+                    Hospital Dashboard
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+
+<div class="stats-grid">
+
+<div>
+<h3>{{ registered_donors }}+</h3>
+<p>Registered Donors</p>
+</div>
+
+<div>
+<h3>{{ hospitals_count }}+</h3>
+<p>Hospitals</p>
+</div>
+
+<div>
+<h3>{{ lives_saved }}+</h3>
+<p>Lives Saved</p>
+</div>
+
+
+</div>
+
+</section>
+
+<!-- HOW -->
+<section class="how-section">
+
+<h2>How Bloodlink Works</h2>
+
+<div class="cards-3">
+
+<div class="card">
+<i class="fa-solid fa-user-plus"></i>
+<h3>Register</h3>
+<p>Donors and hospitals create verified accounts on the platform.</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-magnifying-glass"></i>
+<h3>Match</h3>
+<p>Our system instantly finds compatible donors based on blood type and nearest location.</p>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-hand-holding-heart"></i>
+<h3>Save Lives</h3>
+<p>Fast communication helps hospitals receive blood in critical time.</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- WHO -->
+<section class="who-section">
+
+<h2>Who Can Use Bloodlink?</h2>
+
+<div class="cards-2">
+
+<div class="card">
+<i class="fa-solid fa-droplet"></i>
+<h3>Blood Donors</h3>
+<p>Register once and help save lives whenever your blood type is needed nearby.</p>
+<a href="{% url 'donor_register' %}">Register as Donor →</a>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-bed"></i>
+<h3>Patients</h3>
+<p>Request blood easily and connect quickly with available donors in critical situations.</p>
+<a href="{% url 'create_request' %}">Register as Patient →</a>
+</div>
+
+<div class="card">
+<i class="fa-solid fa-hospital"></i>
+<h3>Hospitals & Blood Banks</h3>
+<p>Post urgent blood requests and connect instantly with eligible donors.</p>
+<a href="{% url 'hospital_register' %}">Register as Hospital →</a>
+</div>
+
+</div>
+
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+
+<h2>Emergency Blood Request?</h2>
+
+<p>
+Get instant donor matches or contact emergency services immediately.
+</p>
+
+<div class="btn-group center">
+{% if user.patient_profile %}
+<a href="{% url 'create_request' %}" class="btn btn-white">
+Request Blood Now
+</a>
+{% endif %}
+<a href="tel:123" class="btn btn-border">
+Call 123
+</a>
+
+</div>
+
+</section>
+
+{% endblock %}

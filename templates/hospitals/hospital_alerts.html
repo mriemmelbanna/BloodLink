@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Alerts{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{
+    max-width:1100px;
+    margin:auto;}
+.header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;padding:24px;
+    border-radius:16px;
+    margin-bottom:20px;
+}
+.card{
+    background:white;border: 1px solid #b80000;
+    border-radius:16px;
+    padding:22px;box-shadow:0 8px 25px rgba(0,0,0,.06);
+}
+.alert-item{border-left:5px solid #dc2626;
+    background:#fff7f7;padding:16px;
+    border-radius:12px;
+    margin-bottom:14px;
+}
+.alert-item h4{
+    color:#b91c1c;
+    margin-bottom:5px;
+}
+.alert-item small{
+    color:#777;
+}
+</style>
+ 
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <div class="header">
+        <h2>Alerts</h2>
+        <p>View low stock and system notifications.</p>
+    </div>
+    <div class="card">
+    {% if nearby_donors %}
+<div class="alert-item" style="border-left:5px solid #dc2626;">
+    <h4>Nearby Donor Alert</h4>
+
+    <p>
+        There are {{ nearby_donors|length }} available donor(s) within 15 km.
+    </p>
+
+    {% for donor in nearby_donors|slice:":5" %}
+        <p>
+            <strong>{{ donor.full_name|default:donor.user.username }}</strong>
+            - {{ donor.blood_type }}
+            - {{ donor.distance_km }} km away
+        </p>
+    {% endfor %}
+
+    <a href="{% url 'hospital_available_donors' %}"
+       style="color:#dc2626; font-weight:600;">
+        View available donors
+    </a>
+</div>
+{% endif %}
+
+   
+        {% for alert in alerts %}
+            <div class="alert-item">
+                <h4>{{ alert.alert_type }}</h4>
+                <p>{{ alert.message }}</p>
+                <small>{{ alert.created_at }}</small>
+            </div>
+        {% empty %}
+            <p>No alerts available.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% if has_sound_alert %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+
+    setTimeout(function () {
+        audio.play().catch(function () {
+            console.log("Browser blocked autoplay sound until user interaction.");
+        });
+    }, 700);
+});
+</script>
+{% endif %}
+
+{% endblock %}

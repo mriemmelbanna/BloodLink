@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% block title %}Patient Registration{% endblock %}
+
+{% block content %}
+
+<style>
+
+body{
+    margin:0;
+    padding:0;
+    background:#f5f6fa;
+    font-family:Arial,sans-serif;
+    color:#333;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 15px;
+    min-height:100vh;
+    max-width:6000px;
+}
+
+.form-card{
+    background:#ffffff;
+    width:95%;
+    max-width:1100px;
+    padding:35px;
+    border-radius:14px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    border-top:5px solid #e74c3c;
+}
+
+h2{
+    color:#e74c3c;
+    margin-bottom:6px;
+    font-size:26px;
+}
+
+.subtitle{
+    font-size:14px;
+    color:#777;
+    margin-bottom:25px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:18px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+
+.field.full{
+    grid-column:span 3;
+}
+
+label{
+    font-weight:600;
+    margin-bottom:6px;
+    font-size:14px;
+}
+
+input,
+select,
+textarea{
+    padding:11px;
+    border:1px solid #dcdde1;
+    border-radius:8px;
+    font-size:14px;
+    transition:0.2s ease;
+    outline:none;
+    background:#fff;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#e74c3c;
+    box-shadow:0 0 0 3px rgba(231,76,60,0.15);
+}
+
+textarea{
+    height:80px;
+    resize:none;
+}
+
+.btn{
+    width:100%;
+    padding:13px;
+    background:#e74c3c;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+    margin-top:22px;
+    transition:0.2s ease;
+}
+
+.btn:hover{
+    background:#c0392b;
+}
+
+.location-btn{
+    margin-top:10px;
+    padding:11px 14px;
+    background:#e74c3c;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+    width:fit-content;
+}
+
+.location-btn:hover{
+    background:#c0392b;
+}
+
+.error{
+    color:#e74c3c;
+    font-size:12px;
+    margin-top:4px;
+}
+
+@media (max-width:700px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:span 1;
+    }
+
+    .form-card{
+        padding:25px;
+    }
+
+    .location-btn{
+        width:100%;
+    }
+}
+
+</style>
+
+<div class="container">
+
+    <div class="form-card">
+
+        <h2><strong>Patient Registration</strong></h2>
+
+        <p class="subtitle">
+            Register as a patient and request blood easily.
+        </p>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="grid">
+
+                <!-- Username -->
+                <div class="field">
+                    <label>Username *</label>
+                    {{ form.username }}
+
+                    {% if form.username.errors %}
+                        <div class="error">
+                            {{ form.username.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div class="field">
+                    <label>Email *</label>
+                    {{ form.email }}
+
+                    {% if form.email.errors %}
+                        <div class="error">
+                            {{ form.email.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="field">
+                    <label>Password *</label>
+                    {{ form.password1 }}
+
+                    {% if form.password1.errors %}
+                        <div class="error">
+                            {{ form.password1.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="field">
+                    <label>Confirm Password *</label>
+                    {{ form.password2 }}
+
+                    {% if form.password2.errors %}
+                        <div class="error">
+                            {{ form.password2.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Phone -->
+                <div class="field">
+                    <label>Phone *</label>
+                    {{ form.phone }}
+
+                    {% if form.phone.errors %}
+                        <div class="error">
+                            {{ form.phone.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Blood Type -->
+                <div class="field">
+                    <label>Blood Type Needed *</label>
+                    {{ form.blood_type_needed }}
+
+                    {% if form.blood_type_needed.errors %}
+                        <div class="error">
+                            {{ form.blood_type_needed.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Age -->
+                <div class="field">
+                    <label>Age *</label>
+                    {{ form.age }}
+
+                    {% if form.age.errors %}
+                        <div class="error">
+                            {{ form.age.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Address -->
+                <div class="field full">
+
+                    <label>Address *</label>
+
+                    {{ form.address }}
+
+                    {% if form.address.errors %}
+                        <div class="error">
+                            {{ form.address.errors|striptags }}
+                        </div>
+                    {% endif %}
+                    <!-- City -->
+                <div class="field full">
+
+                    <label>City *</label>
+
+                    {{ form.city }}
+
+                    {% if form.city.errors %}
+                        <div class="error">
+                            {{ form.city.errors|striptags }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                    <button type="button"
+                            class="location-btn"
+                            onclick="getLocation()">
+
+                        <i class="fa-solid fa-location-dot"></i>
+                        Get Location
+
+                    </button>
+
+                </div>
+
+                
+
+            </div>
+
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+
+            <button type="submit" class="btn">
+                Register as Patient
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+function getLocation(){
+
+    if(!navigator.geolocation){
+        alert("Geolocation is not supported.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById("latitude").value = lat.toFixed(6);
+            document.getElementById("longitude").value = lon.toFixed(6);
+
+            try{
+
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+                );
+
+                const data = await response.json();
+
+                const address = data.display_name || "";
+
+                const city =
+                    data.address.city ||
+                    data.address.town ||
+                    data.address.village ||
+                    data.address.county ||
+                    data.address.state ||
+                    "";
+
+                const addressInput =
+                    document.querySelector('[name="address"]');
+
+                const cityInput =
+                    document.querySelector('[name="city"]');
+
+                if(addressInput){
+                    addressInput.value = address;
+                }
+
+                if(cityInput){
+                    cityInput.value = city;
+                }
+
+                alert("Location added successfully.");
+
+            }catch(error){
+
+                alert("Location detected but address not found.");
+
+            }
+
+        },
+
+        function(){
+
+            alert("Please allow location access.");
+
+        }
+
+    );
+}
+
+</script>
+
+{% endblock %}

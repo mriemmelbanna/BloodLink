@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% block title %}Hospital Registration{% endblock %}
+
+{% block content %}
+
+<style>
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 15px;
+}
+
+.form-card {
+    background: #ffffff;
+    width: 95%;
+    max-width: 1100px;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-top: 5px solid #e74c3c;
+}
+
+h2 {
+    color: #e74c3c;
+    margin-bottom: 6px;
+    font-size: 26px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field.full {
+    grid-column: span 3;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+input, textarea {
+    padding: 11px;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+textarea {
+    height: 80px;
+    resize: none;
+}
+input:focus, textarea:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
+}
+
+input[type="file"] {
+    padding: 8px;
+    background: #fafafa;
+}
+
+.error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.btn {
+    width: 100%;
+    padding: 13px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 22px;
+}
+
+.btn:hover {
+    background: #c0392b;
+}
+.location-btn{
+    margin-top:10px;
+    padding:11px 14px;
+    background:#e74c3c;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+    font-weight:600;
+    width:fit-content;
+    transition:.2s;
+}
+
+.location-btn:hover{
+    background:#c0392b;
+}
+
+@media (max-width: 700px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: span 1;
+    }
+}
+.form-input {
+    padding: 11px;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    width: 100%;
+    background: #fff;
+}
+
+.form-input:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
+}
+</style>
+
+
+<div class="container">
+
+    <div class="form-card">
+
+        <h2><strong>Hospital Registration</strong></h2>
+        <p class="subtitle">
+            Register your hospital to request and manage blood donations.
+        </p>
+
+        <!-- مهم جداً عشان رفع الملفات -->
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="grid">
+                
+                <div class="field">
+                    <label>UserName *</label>
+                    {{ form.username }}
+                </div>
+
+               <!-- Hospital Name -->
+                <div class="field">
+                    <label>Hospital Name *</label>
+                    {{ form.hospital_name }}
+                </div>
+                <!-- Email -->
+                <div class="field">
+                    <label>Email *</label>
+                    {{ form.email }}
+                </div>
+               
+
+                <!-- Password -->
+                <div class="field">
+                    <label>Password *</label>
+                    {{ form.password1 }}
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="field">
+                    <label>Confirm Password *</label>
+                    {{ form.password2 }}
+                </div>
+
+                <!-- Phone -->
+                <div class="field">
+                    <label>Phone *</label>
+                    {{ form.phone }}
+                </div>
+                <div class="field">
+                    <label>License Number *</label>
+                    <input type="text" name="license_number">
+                </div>
+
+              <!-- City -->
+<div class="field">
+    <label>City *</label>
+    {{ form.city }}
+</div>
+
+<!-- Address -->
+<div class="field full">
+    <label>Address *</label>
+    {{ form.address }}
+</div>
+
+<div class="field full">
+
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+
+    <button type="button"
+            class="location-btn"
+            onclick="getLocation()">
+
+        <i class="fa-solid fa-location-dot"></i>
+        Get Location
+
+    </button>
+
+</div>
+<!-- Upload License -->
+<div class="field full">
+    <label>Upload License Document (Optional)</label>
+    <input type="file" name="license_file">
+</div>
+
+<!-- Upload Official Docs -->
+<div class="field full">
+    <label>Upload Official Documents (Optional)</label>
+    <input type="file" name="official_docs" multiple>
+</div>
+
+</div>
+<div class="mb-4">
+    <label class="inline-flex items-center">
+        <input type="checkbox" name="terms" class="form-checkbox text-red-600">
+        <span class="ml-2 text-gray-600">I agree to the terms and confirm that this hospital is operating legally</span>
+    </label>
+</div>
+
+<button type="submit" class="btn">
+Register Hospital
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+
+<script>
+
+function getLocation(){
+
+    if(!navigator.geolocation){
+        alert("Geolocation is not supported.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById("latitude").value = lat.toFixed(6);
+            document.getElementById("longitude").value = lon.toFixed(6);
+
+            try{
+
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+                );
+
+                const data = await response.json();
+
+                const address = data.display_name || "";
+
+                const city =
+                    data.address.city ||
+                    data.address.town ||
+                    data.address.village ||
+                    data.address.county ||
+                    data.address.state ||
+                    "";
+
+                const addressInput =
+                    document.querySelector('[name="address"]');
+
+                const cityInput =
+                    document.querySelector('[name="city"]');
+
+                if(addressInput){
+                    addressInput.value = address;
+                }
+
+                if(cityInput){
+                    cityInput.value = city;
+                }
+
+                alert("Location added successfully.");
+
+            }catch(error){
+
+                alert("Location detected but address not found.");
+
+            }
+
+        },
+
+        function(){
+
+            alert("Please allow location access.");
+
+        }
+
+    );
+}
+
+</script>
+
+
+{% endblock %}

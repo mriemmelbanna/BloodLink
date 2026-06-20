@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% block title %}Edit Hospital Profile{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{
+    max-width:1100px;
+    margin:auto;
+}
+
+.header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    padding:24px;
+    border-radius:16px;
+    margin-bottom:20px;
+}
+
+.header h2{
+    font-size:26px;
+    margin-bottom:5px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #b80000;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.field.full{
+    grid-column:span 2;
+}
+
+label{
+    display:block;
+    font-weight:600;
+    margin-bottom:6px;
+    color:#374151;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    padding:11px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#dc2626;
+    outline:none;
+    box-shadow:0 0 0 3px rgba(220,38,38,.15);
+}
+
+.location-btn{
+    margin-top:12px;
+    background:#dc2626;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.location-btn:hover{
+    background:#b91c1c;
+}
+
+.btn{
+    display:inline-block;
+    margin-top:22px;
+    background:#dc2626;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn:hover{
+    background:#b91c1c;
+}
+
+.cancel-btn{
+    display:inline-block;
+    margin-top:22px;
+    margin-left:10px;
+    background:#f3f4f6;
+    color:#374151;
+    padding:10px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.cancel-btn:hover{
+    background:#e5e7eb;
+}
+
+@media(max-width:800px){
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:span 1;
+    }
+
+    .btn,
+    .cancel-btn{
+        width:100%;
+        text-align:center;
+        margin-left:0;
+    }
+}
+</style>
+
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <div class="header">
+        <h2>Edit Hospital Profile</h2>
+        <p>Update your hospital information and location.</p>
+    </div>
+
+    <div class="card">
+
+        <form method="post" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <!-- Hospital Name -->
+                <div>
+                    <label>Hospital Name</label>
+                    <input type="text"
+                           name="hospital_name"
+                           value="{{ hp.hospital_name }}">
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label>Phone</label>
+                    <input type="text"
+                           name="phone"
+                           value="{{ hp.phone }}">
+                </div>
+
+                <!-- City -->
+                <div>
+                    <label>City</label>
+                    <input type="text"
+                           id="city"
+                           name="city"
+                           value="{{ hp.city }}">
+                </div>
+
+                <!-- Address -->
+                <div>
+                    <label>Address</label>
+                    <input type="text"
+                           id="address"
+                           name="address"
+                           value="{{ hp.address }}">
+                </div>
+
+                <!-- License -->
+                <div>
+                    <label>License File</label>
+                    <input type="file"
+                           name="license_file">
+                </div>
+                {% if hp.license_file %}
+    <p>
+        Current file:
+        <a href="{{ hp.license_file.url }}" target="_blank">View License</a>
+    </p>
+
+    <label>
+        <input type="checkbox" name="remove_license">
+        Remove license file
+    </label>
+{% endif %}
+
+                <!-- Official Docs -->
+                <div>
+                    <label>Official Documents</label>
+                    <input type="file"
+                           name="official_docs">
+                </div>
+
+            </div>
+            {% if hp.official_docs %}
+    <p>
+        Current file:
+        <a href="{{ hp.official_docs.url }}" target="_blank">View Official Docs</a>
+    </p>
+
+    <label>
+        <input type="checkbox" name="remove_docs">
+        Remove official docs
+    </label>
+{% endif %}
+
+            <!-- HIDDEN LOCATION -->
+            <input type="hidden"
+                   id="latitude"
+                   name="latitude"
+                   value="{{ hp.latitude }}">
+
+            <input type="hidden"
+                   id="longitude"
+                   name="longitude"
+                   value="{{ hp.longitude }}">
+
+            <!-- GET LOCATION BUTTON -->
+            <button type="button"
+                    class="location-btn"
+                    onclick="getLocation()">
+
+                <i class="fa-solid fa-location-dot"></i>
+                Get Current Location
+
+            </button>
+
+            <br>
+            {{ form.errors }}
+
+            <!-- SAVE -->
+            <button type="submit" class="btn">
+                Save Changes
+            </button>
+
+            <a href="{% url 'hospital_profile' %}" class="cancel-btn">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+function getLocation(){
+
+    if(!navigator.geolocation){
+        alert("Geolocation is not supported.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            const lat = position.coords.latitude.toFixed(6);
+            const lon = position.coords.longitude.toFixed(6);
+          
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lon;
+
+            try{
+
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+                );
+
+                const data = await response.json();
+
+                const address = data.display_name || "";
+
+                const city =
+                    data.address.city ||
+                    data.address.town ||
+                    data.address.village ||
+                    data.address.state ||
+                    "";
+
+                document.getElementById("address").value = address;
+                document.getElementById("city").value = city;
+
+                alert("Location added successfully.");
+
+            }catch(error){
+
+                console.log(error);
+                alert("Could not fetch address.");
+
+            }
+
+        },
+
+        function(error){
+
+            alert("Location access denied.");
+
+        }
+
+    );
+}
+
+</script>
+
+{% endblock %}

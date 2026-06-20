@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Hospital Profile{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{max-width:1100px;margin:auto;}
+.card{background:#fff;border: 1px solid #b80000;border-radius:16px;padding:24px;box-shadow:0 8px 25px rgba(0,0,0,.06);}
+.header{background:linear-gradient(135deg,#dc2626,#991b1b);color:white;padding:24px;border-radius:16px;margin-bottom:20px;}
+.header h2{font-size:26px;margin-bottom:5px;}
+.info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+.info-box{background:#fff7f7;border:1px solid #fee2e2;border-radius:12px;padding:16px;}
+.info-box label{font-size:13px;color:#777;display:block;margin-bottom:5px;}
+.info-box p{font-weight:700;color:#333;}
+.btn{display:inline-block;margin-top:22px;background:#dc2626;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;}
+.btn:hover{background:#b91c1c;}
+@media(max-width:800px){.info-grid{grid-template-columns:1fr;}}
+</style>
+
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <div class="header">
+        <h2>Hospital Profile</h2>
+        <p>View your hospital account information.</p>
+    </div>
+
+    <div class="card">
+        <div class="info-grid">
+            <div class="info-box">
+                <label>Hospital Name</label>
+                <p>{{ hp.hospital_name }}</p>
+            </div>
+
+            <div class="info-box">
+                <label>Username</label>
+                <p>{{ hp.user.username }}</p>
+            </div>
+
+            <div class="info-box">
+                <label>Email</label>
+                <p>{{ hp.user.email }}</p>
+            </div>
+
+            <div class="info-box">
+                <label>Phone</label>
+                <p>{{ hp.phone }}</p>
+            </div>
+
+            <div class="info-box">
+                <label>City</label>
+                <p>{{ hp.city }}</p>
+            </div>
+
+            <div class="info-box">
+                <label>Address</label>
+                <p>{{ hp.address }}</p>
+            </div>
+            <div class="info-box">
+               <!-- HIDDEN LOCATION -->
+               <input type="hidden"
+               id="latitude"
+               name="latitude"
+               value="{{ hp.latitude }}">
+
+        <input type="hidden"
+               id="longitude"
+               name="longitude"
+               value="{{ hp.longitude }}">
+    <label>Location</label>
+
+    {% if hp.latitude and hp.longitude %}
+        <p>
+            <a href="https://www.google.com/maps?q={{ hp.latitude }},{{ hp.longitude }}"
+               target="_blank"
+               style="color:#dc2626; font-weight:600;">
+                Open in Google Maps
+            </a>
+        </p>
+    {% else %}
+        <p>No location added</p>
+    {% endif %}
+</div>
+            <div class="info-box">
+    <label>License File</label>
+    {% if hp.license_file %}
+        <p><a href="{{ hp.license_file.url }}" target="_blank">View License File</a></p>
+    {% else %}
+        <p>No file uploaded</p>
+    {% endif %}
+</div>
+
+<div class="info-box">
+    <label>Official Documents</label>
+    {% if hp.official_docs %}
+        <p><a href="{{ hp.official_docs.url }}" target="_blank">View Official Documents</a></p>
+    {% else %}
+        <p>No file uploaded</p>
+    {% endif %}
+</div>
+        </div>
+
+        <a href="{% url 'hospital_edit_profile' %}" class="btn">Edit Profile</a>
+    </div>
+
+</div>
+
+{% endblock %}

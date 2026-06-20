@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "donors/donor_subnav.html" %}
+<script>window.location.href = "{% url 'donor_dashboard' %}";</script>
+{% endblock %}

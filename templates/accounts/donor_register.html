@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+{% block title %}Donor Registration{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f5f6fa;
+        font-family: Arial, sans-serif;
+        color: #333;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 15px;
+        min-height: 100vh;
+        max-width:6000px;
+    }
+
+    .form-card {
+        background: #ffffff;
+        width: 95%;
+        max-width: 1100px;
+        padding: 35px;
+        border-radius: 14px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        border-top: 5px solid #e74c3c;
+    }
+
+    h2 {
+        color: #e74c3c;
+        margin-bottom: 6px;
+        font-size: 26px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 25px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 18px;
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .field.full {
+        grid-column: span 3;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+    input, select, textarea {
+        padding: 11px;
+        border: 1px solid #dcdde1;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: 0.2s ease;
+        outline: none;
+        background: #fff;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 3px rgba(231,76,60,0.15);
+    }
+
+    .medical-section {
+        margin-top: 25px;
+        padding: 18px;
+        border-radius: 10px;
+        background: #fafafa;
+        border: 1px solid #eee;
+    }
+
+    .checkbox-box {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px solid #eee;
+    }
+
+    .checkbox-box input[type="checkbox"] {
+        margin-top: 3px;
+        transform: scale(1.1);
+        accent-color: #e74c3c;
+    }
+
+    .checkbox-box label {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .checkbox-box small {
+        display: block;
+        margin-top: 4px;
+        color: #888;
+        font-size: 12px;
+    }
+    textarea[name="address"]{
+    height: 70px;
+    width: 80%;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 13px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 22px;
+        transition: 0.2s ease;
+    }
+
+    .btn:hover {
+        background: #c0392b;
+    }
+
+    .location-btn {
+        margin-top: 10px;
+        padding: 11px 14px;
+        background: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+    .location-btn:hover {
+        background: #c0392b;
+    }
+
+    @media (max-width: 700px) {
+        .grid {
+            grid-template-columns: 1fr;
+        }
+
+        .field.full {
+            grid-column: span 1;
+        }
+
+        .form-card {
+            padding: 25px;
+        }
+
+        .location-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="container">
+
+    <div class="form-card">
+
+        <h2><strong>Donor Registration</strong></h2>
+        <p class="subtitle">Register as a blood donor and help save lives.</p>
+
+        <form method="POST" action="">
+            {% if form.errors %}
+             <div style="background:#fee2e2; color:#991b1b; padding:15px; border-radius:10px; margin-bottom:20px;">
+              <strong>Form Errors:</strong>
+              {{ form.errors }}
+             </div>
+            {% endif %}
+            {% csrf_token %}
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Username *</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="field">
+                    <label>Email *</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="field">
+                    <label>Password *</label>
+                    {{ form.password1 }}
+                
+                    {% if form.password1.errors %}
+                        <small style="color:#dc2626; margin-top:5px;">
+                            {{ form.password1.errors.0 }}
+                        </small>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label>Confirm Password *</label>
+                    {{ form.password2 }}
+                
+                    {% if form.password2.errors %}
+                        <small style="color:#dc2626; margin-top:5px;">
+                            {{ form.password2.errors.0 }}
+                        </small>
+                    {% endif %}
+                </div>
+
+                <div class="field">
+                    <label>Phone Number *</label>
+                    {{ form.phone }}
+                </div>
+
+                <div class="field">
+                    <label>Blood Type *</label>
+                    {{ form.blood_type }}
+                </div>
+
+                <div class="field">
+                    <label>Age *</label>
+                
+                    {{ form.age }}
+                
+                    {% if form.age.errors %}
+                        <small style="color:#dc2626; margin-top:5px;">
+                            {{ form.age.errors.0 }}
+                        </small>
+                    {% endif %}
+                </div>
+                
+                <div class="field">
+                    <label>Weight (kg) *</label>
+                
+                    {{ form.weight }}
+                
+                    {% if form.weight.errors %}
+                        <small style="color:#dc2626; margin-top:5px;">
+                            {{ form.weight.errors.0 }}
+                        </small>
+                    {% endif %}
+                </div>
+                <div class="field full">
+                    <label>Address *</label>
+                    {{ form.address }}</div>
+                    <div class="field full">
+                    <label>City *</label>
+                    {{ form.city }}
+                
+                </div>
+                <input type="hidden"
+                   id="latitude"
+                   name="latitude"
+                   value="">
+
+            <input type="hidden"
+                   id="longitude"
+                   name="longitude"
+                   value="">
+
+            <button type="button"
+                    class="location-btn"
+                    onclick="getLocation()">
+
+                <i class="fa-solid fa-location-dot"></i>
+                Get Current Location
+
+            </button>
+
+
+                
+
+            </div>
+
+            
+
+            <div class="medical-section">
+
+                <div class="checkbox-box">
+            
+                    {{ form.no_restrictive_diseases }}
+            
+                    <label>
+                        Are you free from diseases that prevent blood donation?
+            
+                        <small>
+                            Examples: HIV / Hepatitis B or C, heart disease, cancer, severe anemia
+                        </small>
+            
+                        {% if form.no_restrictive_diseases.errors %}
+                            <small style="color:#dc2626; display:block; margin-top:6px;">
+            
+                                {{ form.no_restrictive_diseases.errors.0 }}
+            
+                            </small>
+                        {% endif %}
+            
+                    </label>
+            
+                </div>
+            
+                <div class="checkbox-box">
+            
+                    {{ form.no_chronic_diseases }}
+            
+                    <label>
+            
+                        Do you confirm you do NOT have chronic diseases?
+            
+                        <small>
+                            Examples: diabetes, high blood pressure, kidney disease, liver disease, asthma
+                        </small>
+            
+                        {% if form.no_chronic_diseases.errors %}
+                            <small style="color:#dc2626; display:block; margin-top:6px;">
+            
+                                {{ form.no_chronic_diseases.errors.0 }}
+            
+                            </small>
+                        {% endif %}
+            
+                    </label>
+            
+                </div>
+            
+            </div>
+
+            <button type="submit" class="btn">Register as Donor</button>
+
+        </form>
+
+    
+    </div>
+
+</div>
+<script>
+
+function getLocation(){
+
+    if(!navigator.geolocation){
+        alert("Geolocation is not supported.");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            document.getElementById("latitude").value = lat.toFixed(6);
+            document.getElementById("longitude").value = lon.toFixed(6);
+
+            try{
+
+                const response = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+                );
+
+                const data = await response.json();
+
+                const address = data.display_name || "";
+
+                const city =
+                    data.address.city ||
+                    data.address.town ||
+                    data.address.village ||
+                    data.address.county ||
+                    data.address.state ||
+                    "";
+
+                const addressInput =
+                    document.querySelector('[name="address"]');
+
+                const cityInput =
+                    document.querySelector('[name="city"]');
+
+                if(addressInput){
+                    addressInput.value = address;
+                }
+
+                if(cityInput){
+                    cityInput.value = city;
+                }
+
+                alert("Location added successfully.");
+
+            }catch(error){
+
+                alert("Location detected but address not found.");
+
+            }
+
+        },
+
+        function(){
+
+            alert("Please allow location access.");
+
+        }
+
+    );
+}
+
+</script>
+{% endblock %}

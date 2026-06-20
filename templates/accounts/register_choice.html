@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Blood Donation{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-[70vh]">
+    <div class="bg-white p-8 rounded-lg shadow-md text-center space-y-6 max-w-md">
+        <h2 class="text-2xl font-bold text-red-600">Register</h2>
+        <p class="text-gray-600">Choose your account type to register:</p>
+
+        <div class="flex flex-col gap-4">
+            <a href="{% url 'donor_register' %}" 
+               class="bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+               Register as Donor
+            </a>
+            <a href="{% url 'patient_register' %}" 
+               class="bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+               Register as Patient
+            </a>
+            <a href="{% url 'hospital_register' %}" 
+               class="bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+               Register as Hospital
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

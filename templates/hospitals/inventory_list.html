@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% block title %}Inventory{% endblock %}
+
+{% block content %}
+<style>
+.page-container { max-width:1100px; margin:auto; }
+
+.header {
+    background: linear-gradient(135deg,#dc2626,#991b1b);
+    color:white; padding:24px; border-radius:16px; margin-bottom:20px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+}
+.header h2 { margin:0; font-size:24px; }
+.header p  { margin:4px 0 0; opacity:.85; font-size:14px; }
+.header-right a {
+    background:rgba(255,255,255,.2); color:white; padding:9px 16px;
+    border-radius:10px; text-decoration:none; font-size:13px; font-weight:600;
+    border:1px solid rgba(255,255,255,.4);
+}
+.header-right a:hover { background:rgba(255,255,255,.35); }
+
+/* stat cards — same design as reports page */
+.stats-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:14px; margin-bottom:20px;
+}
+.stat-card {
+    background:#fff; border:1px solid #fecaca; border-radius:14px;
+    padding:16px; text-align:center; box-shadow:0 2px 10px rgba(220,38,38,.07);
+}
+.stat-number { font-size:28px; font-weight:700; color:#64748b; }
+.stat-label  { font-size:12px; color:#9ca3af; margin-top:3px; }
+.stat-card.green  .stat-number { color:#64748b; }
+.stat-card.orange .stat-number { color:#64748b; }
+.stat-card.slate  .stat-number { color:#64748b; }
+.stat-card.dark   .stat-number { color:#64748b; }
+
+/* low-stock banner */
+.low-banner {
+    background:#fff7ed; border:1px solid #fed7aa; border-radius:12px;
+    padding:13px 18px; margin-bottom:16px;
+    display:flex; flex-wrap:wrap; gap:9px; align-items:center;
+}
+.low-banner strong { color:#c2410c; font-size:13px; }
+.low-tag { background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+
+/* reports crosslink */
+.report-link {
+    background:#fff7f7; border:1px solid #fecaca; border-radius:10px;
+    padding:11px 16px; margin-bottom:16px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+}
+.report-link span { color:#6b7280; font-size:13px; }
+.report-link a    { color:#dc2626; font-size:13px; font-weight:600; text-decoration:none; }
+.report-link a:hover { text-decoration:underline; }
+
+/* table card */
+.card {
+    background:#fff; border:1px solid #fecaca; border-radius:16px;
+    padding:22px; box-shadow:0 8px 25px rgba(0,0,0,.06); overflow-x:auto;
+}
+.top-actions { display:flex; justify-content:space-between; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.btn { background:#dc2626; color:white; padding:10px 16px; border-radius:10px; text-decoration:none; border:none; cursor:pointer; font-size:14px; }
+.btn-outline { background:white; color:#dc2626; border:1px solid #dc2626; }
+.filters { display:flex; gap:10px; flex-wrap:wrap; }
+.filters select { padding:10px; border:1px solid #e5e7eb; border-radius:9px; font-size:14px; }
+
+table { width:100%; border-collapse:collapse; min-width:680px; }
+th, td { padding:12px 14px; border-bottom:1px solid #f3f4f6; text-align:left; font-size:14px; }
+th { background:#fff7f7; color:#b91c1c; font-weight:600; }
+tr:hover td { background:#fefafa; }
+
+.badge { padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+.badge-AVAILABLE  { background:#dcfce7; color:#15803d; }
+.badge-EXPIRED    { background:#fee2e2; color:#b91c1c; }
+.badge-DISCARDED  { background:#f3f4f6; color:#6b7280; }
+.badge-RESERVED   { background:#dbeafe; color:#1d4ed8; }
+.badge-COLLECTED  { background:#fef9c3; color:#92400e; }
+.badge-TESTED     { background:#ede9fe; color:#6d28d9; }
+
+.action-update  { color:#dc2626; font-weight:600; text-decoration:none; margin-right:10px; }
+.action-update:hover { text-decoration:underline; }
+.action-discard { color:#991b1b; font-weight:600; background:none; border:none; cursor:pointer; }
+.action-discard:hover { text-decoration:underline; }
+
+@media(max-width:768px){
+    .header { flex-direction:column; text-align:center; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .top-actions { flex-direction:column; }
+    .btn { width:100%; text-align:center; display:block; }
+    .filters { flex-direction:column; width:100%; }
+    .filters select { width:100%; }
+}
+</style>
+
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <h2>🩸 Blood Inventory</h2>
+            <p>Manage blood units and stock status — {{ hp.hospital_name }}</p>
+        </div>
+        <div class="header-right">
+            <a href="{% url 'inventory_reports' %}">Full Reports</a>
+        </div>
+    </div>
+
+    <!-- STAT CARDS — same numbers as Reports page -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_units }}</div>
+            <div class="stat-label">Total Units</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-number">{{ available_units }}</div>
+            <div class="stat-label">Available</div>
+        </div>
+        <div class="stat-card orange">
+            <div class="stat-number">{{ reserved_units }}</div>
+            <div class="stat-label">Reserved</div>
+        </div>
+        <div class="stat-card slate">
+            <div class="stat-number">{{ collected_units }}</div>
+            <div class="stat-label">Collected</div>
+        </div>
+        <div class="stat-card slate">
+            <div class="stat-number">{{ tested_units }}</div>
+            <div class="stat-label">Tested</div>
+        </div>
+        <div class="stat-card dark">
+            <div class="stat-number">{{ expired_units }}</div>
+            <div class="stat-label">Expired</div>
+        </div>
+        <div class="stat-card dark">
+            <div class="stat-number">{{ discarded_units }}</div>
+            <div class="stat-label">Discarded</div>
+        </div>
+    </div>
+
+    <!-- LOW STOCK ALERT -->
+    {% if low_stock_types %}
+    <div class="low-banner">
+        <strong>⚠️ Low Stock:</strong>
+        {% for item in low_stock_types %}
+            <span class="low-tag">{{ item.blood_type }} — {{ item.count }} unit{{ item.count|pluralize }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- REPORTS CROSSLINK -->
+    <div class="report-link">
+        <span> These stats match your <strong>Inventory Reports</strong> page exactly.</span>
+        <a href="{% url 'inventory_reports' %}">Open Full Reports →</a>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card">
+        <div class="top-actions">
+            <a href="{% url 'hospital_inventory_add' %}" class="btn">+ Add Blood Unit</a>
+            <form method="get" class="filters">
+                <select name="blood_type">
+                    <option value="">All Blood Types</option>
+                    {% for value,label in blood_types %}
+                        <option value="{{ value }}" {% if request.GET.blood_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    {% for value,label in statuses %}
+                        <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn">Filter</button>
+                {% if request.GET.blood_type or request.GET.status %}
+                    <a href="{% url 'hospital_inventory' %}" class="btn btn-outline">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Unit ID</th>
+                    <th>Blood Type</th>
+                    <th>Source</th>
+                    <th>Volume</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for unit in units %}
+                <tr>
+                    <td><code>{{ unit.unit_id }}</code></td>
+                    <td><strong>{{ unit.blood_type }}</strong></td>
+                    <td>{{unit.source}}</td>
+                    <td>{{ unit.volume_ml }} ml</td>
+                    <td>{{ unit.expiry_date }}</td>
+                    <td><span class="badge badge-{{ unit.status }}">{{ unit.get_status_display }}</span></td>
+                    <td>
+                        <a href="{% url 'hospital_inventory_status' unit.pk %}" class="action-update">Update</a>
+                        <form method="post" action="{% url 'hospital_inventory_discard' unit.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="action-discard">Discard</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center;color:#9ca3af;padding:32px;">
+                        No blood units found.
+                        <a href="{% url 'hospital_inventory_add' %}" style="color:#dc2626;font-weight:600;"> Add one →</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

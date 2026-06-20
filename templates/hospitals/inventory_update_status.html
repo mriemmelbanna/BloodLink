@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Update Blood Unit Status{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{max-width:1100px;margin:auto;}
+.header{background:linear-gradient(135deg,#dc2626,#991b1b);color:white;padding:24px;border-radius:16px;margin-bottom:20px;}
+.card{background:#fff;border:1px solid #b80000;border-radius:16px;padding:26px;box-shadow:0 8px 25px rgba(0,0,0,.06);}
+.info{background:#fff7f7;border:1px solid #fee2e2;border-radius:12px;padding:16px;margin-bottom:18px;}
+label{font-weight:600;display:block;margin-bottom:6px;}
+select{width:100%;padding:11px;border:1px solid #ddd;border-radius:9px;}
+.btn{margin-top:22px;background:#dc2626;color:white;padding:11px 18px;border:none;border-radius:10px;cursor:pointer;text-decoration:none;display:inline-block;}
+.back{background:#555;margin-left:10px;}
+</style>
+
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <div class="header">
+        <h2>Update Blood Unit Status</h2>
+        <p>Change the current status of this blood unit.</p>
+    </div>
+
+    <div class="card">
+        <div class="info">
+            <p><strong>Unit ID:</strong> {{ unit.unit_id }}</p>
+            <p><strong>Blood Type:</strong> {{ unit.blood_type }}</p>
+            <p><strong>Current Status:</strong> {{ unit.status }}</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label>Status</label>
+            <select name="status">
+                {% for value,label in statuses %}
+                    <option value="{{ value }}" {% if unit.status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn">Save Changes</button>
+            <a href="{% url 'hospital_inventory' %}" class="btn back">Cancel</a>
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "requests_app/patient_subnav.html" %}
+
+<div class="max-w-2xl mx-auto mt-8 bg-white rounded-xl shadow p-6">
+  <h2 class="text-2xl font-bold text-red-700 mb-6">Donor Details</h2>
+
+  <div class="space-y-4">
+    <div class="flex items-center gap-3">
+      <span class="font-semibold text-gray-600 w-40">Name:</span>
+      <span class="text-gray-900">{{ donor.full_name|default:donor.user.username }}</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-semibold text-gray-600 w-40">Blood Type:</span>
+      <span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold">
+        {{ donor.blood_type|default:"—" }}
+      </span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-semibold text-gray-600 w-40">City:</span>
+      <span class="text-gray-900">{{ donor.city|default:"—" }}</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-semibold text-gray-600 w-40">Phone:</span>
+      <span class="text-gray-900">{{ donor.phone|default:"—" }}</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-semibold text-gray-600 w-40">Availability:</span>
+      {% if donor.is_available %}
+        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Available</span>
+      {% else %}
+        <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-sm font-semibold">Not Available</span>
+      {% endif %}
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-semibold text-gray-600 w-40">Last Donation:</span>
+      <span class="text-gray-900">{{ donor.last_donation_date|default:"—" }}</span>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <a href="{% url 'patient-requests' %}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-5 py-2 rounded-lg transition">
+      ← Back to My Requests
+    </a>
+  </div>
+</div>
+{% endblock %}

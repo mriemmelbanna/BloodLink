@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* PAGE */
+.page-container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+/* HEADER */
+.header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    padding:24px;
+    border-radius:16px;
+    margin-bottom:22px;
+}
+
+.title{
+    font-size:24px;
+    font-weight:700;
+}
+
+.subtitle{
+    color:#f3f4f6;
+    font-size:14px;
+    margin-top:4px;
+}
+
+/* CARD */
+.profile-card{
+    background:#fff;
+    border:1px solid #b80000;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:0 4px 10px rgba(0,0,0,.05);
+}
+
+/* TOP */
+.profile-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+/* EDIT BUTTON */
+.edit-btn{
+    background:#dc2626;
+    color:white;
+    padding:10px 16px;
+    border-radius:10px;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.edit-btn:hover{
+    background:#b91c1c;
+}
+
+/* GRID */
+.profile-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+/* ITEM */
+.info-box{
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:18px;
+    background:#fff;
+    transition:.3s;
+}
+
+.info-box:hover{
+    background:#fafafa;
+}
+
+.info-label{
+    font-size:13px;
+    color:#6b7280;
+    margin-bottom:7px;
+}
+
+.info-value{
+    font-size:16px;
+    font-weight:600;
+    color:#111827;
+    word-break:break-word;
+}
+
+/* LOCATION LINK */
+.map-link{
+    color:#dc2626;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.map-link:hover{
+    text-decoration:underline;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+
+    .page-container{
+        padding:14px;
+    }
+
+    .header{
+        padding:18px;
+    }
+
+    .title{
+        font-size:20px;
+    }
+
+    .profile-grid{
+        grid-template-columns:1fr;
+    }
+
+    .edit-btn{
+        width:100%;
+        text-align:center;
+    }
+}
+
+</style>
+
+<div class="page-container">
+
+    {% include "requests_app/patient_subnav.html" %}
+
+    <!-- HEADER -->
+    <div class="header">
+
+        <div class="title">
+            Patient Profile
+        </div>
+
+        <div class="subtitle">
+            View and manage your personal information
+        </div>
+
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card">
+
+        <!-- TOP -->
+        <div class="profile-top">
+
+            <div>
+                <h2 style="font-size:20px; font-weight:700;">
+                    {{ pprofile.full_name|default:request.user.username }}
+                </h2>
+
+                <div style="color:#6b7280; margin-top:4px;">
+                    Patient Account
+                </div>
+            </div>
+
+            <a href="{% url 'patient_edit' %}"
+               class="edit-btn">
+
+                <i class="fa-regular fa-pen-to-square"></i>
+                Edit Profile
+
+            </a>
+
+        </div>
+
+        <!-- GRID -->
+        <div class="profile-grid">
+
+            <!-- FULL NAME -->
+            <div class="info-box">
+
+                <div class="info-label">
+                    Full Name
+                </div>
+
+                <div class="info-value">
+                    {{ pprofile.full_name|default:"—" }}
+                </div>
+
+            </div>
+
+            <!-- PHONE -->
+            <div class="info-box">
+
+                <div class="info-label">
+                    Phone
+                </div>
+
+                <div class="info-value">
+                    {{ pprofile.phone|default:"—" }}
+                </div>
+
+            </div>
+
+            <!-- CITY -->
+            <div class="info-box">
+
+                <div class="info-label">
+                    City
+                </div>
+
+                <div class="info-value">
+                    {{ pprofile.city|default:"—" }}
+                </div>
+
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="info-box">
+
+                <div class="info-label">
+                    Address
+                </div>
+
+                <div class="info-value">
+                    {{ pprofile.address|default:"—" }}
+                </div>
+
+            </div>
+
+            <!-- LOCATION -->
+            <div class="info-box">
+
+                <div class="info-label">
+                    Location
+                </div>
+
+                <div class="info-value">
+
+                    {% if pprofile.latitude and pprofile.longitude %}
+
+                        <a href="https://www.google.com/maps?q={{ pprofile.latitude }},{{ pprofile.longitude }}"
+                           target="_blank"
+                           class="map-link">
+
+                            Open in Google Maps
+
+                        </a>
+
+                    {% else %}
+
+                        —
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <!-- ACCOUNT -->
+            <div class="info-box">
+
+                <div class="info-label">
+                    Account Username
+                </div>
+
+                <div class="info-value">
+                    {{ request.user.username }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Nearby Blood Requests{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{
+    max-width:1100px;
+    margin:auto;
+    padding:20px;
+}
+
+.header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    padding:24px;
+    border-radius:16px;
+    margin-bottom:22px;
+}
+
+.card{
+    background:white;
+    border:1px solid #b80000;
+    border-radius:16px;
+    padding:22px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+}
+
+.request-card{
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:14px;
+    background:#fff;
+}
+
+.request-card:hover{
+    background:#fff7f7;
+}
+
+.badge{
+    padding:5px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.badge-critical{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.badge-urgent{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.badge-normal{
+    background:#f3f4f6;
+    color:#374151;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    padding:9px 14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn-accept{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-decline{
+    background:white;
+    color:#444;
+    border:1px solid #ddd;
+}
+
+.empty{
+    color:#6b7280;
+    font-size:15px;
+}
+
+@media(max-width:768px){
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+    }
+}
+</style>
+
+<div class="page-container">
+
+    
+    <div class="header">
+        <h2>Nearby Blood Requests</h2>
+        <p>Blood requests in {{ donor_city }} matching your blood type.</p>
+    </div>
+
+    <div class="card">
+
+        {% for req in requests %}
+
+            <div class="request-card">
+
+                <h3>
+                    {% if req.hospital %}
+                        {{ req.hospital.hospital_name }}
+                    {% elif req.patient %}
+                        Patient: {{ req.patient.user.username }}
+                    {% else %}
+                        Unknown Request Source
+                    {% endif %}
+                </h3>
+
+                <p>🩸 Blood Type: <strong>{{ req.blood_type }}</strong></p>
+                <p>📍 City: {{ req.city }}</p>
+                <p>Units Needed: {{ req.required_units }}</p>
+
+                {% if req.scheduled_time %}
+                    <p>📅 Scheduled Time: {{ req.scheduled_time }}</p>
+                {% endif %}
+
+                <p>
+                    Urgency:
+                    {% if req.urgency == "CRITICAL" %}
+                        <span class="badge badge-critical">CRITICAL</span>
+                    {% elif req.urgency == "URGENT" %}
+                        <span class="badge badge-urgent">URGENT</span>
+                    {% else %}
+                        <span class="badge badge-normal">NORMAL</span>
+                    {% endif %}
+                </p>
+
+                {% if req.notes %}
+                    <p>Notes: {{ req.notes }}</p>
+                {% endif %}
+
+                <div class="actions">
+                    <form method="post" action="{% url 'respond_to_request' req.id %}">
+                        {% csrf_token %}
+                        <button name="action" value="accept" class="btn btn-accept">
+                            Accept
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'respond_to_request' req.id %}">
+                        {% csrf_token %}
+                        <button name="action" value="decline" class="btn btn-decline">
+                            Decline
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <p class="empty">No matching blood requests found in your city.</p>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

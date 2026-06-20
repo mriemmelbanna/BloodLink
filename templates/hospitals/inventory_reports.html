@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block title %}Inventory Reports{% endblock %}
+
+{% block content %}
+<style>
+.report-container { max-width:1200px; margin:auto; }
+
+.report-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:30px; flex-wrap:wrap; gap:12px;
+}
+.report-title { font-size:36px; font-weight:800; color:#dc2626; }
+.report-header-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.print-btn {
+    background:#dc2626; color:white; border:none; padding:12px 24px;
+    border-radius:12px; font-weight:600; cursor:pointer; font-size:14px;
+}
+.back-btn {
+    background:white; color:#dc2626; border:1px solid #dc2626;
+    padding:12px 24px; border-radius:12px; font-weight:600;
+    text-decoration:none; font-size:14px;
+}
+
+/* stat cards — same as inventory_list */
+.stats-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:20px; margin-bottom:36px;
+}
+.stat-card {
+    background:white; border-radius:18px; padding:28px;
+    text-align:center; box-shadow:0 5px 20px rgba(0,0,0,.06);
+    border:1px solid #fecaca;
+}
+.stat-card h2      { font-size:40px; font-weight:800; color:#64748b; }
+.stat-card p       { color:#64748b; margin-top:8px; font-size:14px; }
+.stat-card.green h2  { color:#64748b; }
+.stat-card.orange h2 { color:#64748b; }
+.stat-card.slate  h2 { color:#64748b; }
+.stat-card.dark   h2 { color:#64748b; }
+
+/* low banner */
+.low-banner {
+    background:#fff7ed; border:1px solid #fed7aa; border-radius:12px;
+    padding:14px 18px; margin-bottom:28px;
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+}
+.low-banner strong { color:#c2410c; }
+.low-tag { background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600; }
+
+/* inventory link */
+.inv-link {
+    background:#fff7f7; border:1px solid #fecaca; border-radius:10px;
+    padding:12px 18px; margin-bottom:28px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;
+}
+.inv-link span { color:#6b7280; font-size:13px; }
+.inv-link a    { color:#dc2626; font-weight:600; font-size:13px; text-decoration:none; }
+
+/* table */
+.report-table {
+    width:100%; background:white; border-radius:18px;
+    overflow:hidden; box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+.report-table table { width:100%; border-collapse:collapse; }
+.report-table th {
+    background:#fee2e2; color:#991b1b;
+    padding:18px; text-align:left; font-weight:700;
+}
+.report-table td { padding:16px 18px; border-bottom:1px solid #f1f5f9; font-size:15px; }
+.report-table tr:hover td { background:#fefafa; }
+
+.badge-low  { background:#fee2e2; color:#b91c1c; padding:7px 16px; border-radius:999px; font-size:13px; font-weight:600; }
+.badge-good { background:#dcfce7; color:#166534; padding:7px 16px; border-radius:999px; font-size:13px; font-weight:600; }
+.badge-out  { background:#f3f4f6; color:#6b7280; padding:7px 16px; border-radius:999px; font-size:13px; font-weight:600; }
+
+@media(max-width:768px){
+    .report-title { font-size:26px; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .stat-card h2 { font-size:30px; }
+}
+@media print {
+    .print-btn, .back-btn, .inv-link { display:none !important; }
+}
+</style>
+
+<div class="report-container">
+
+    <!-- Header -->
+    <div class="report-header">
+        <h1 class="report-title">Inventory Reports</h1>
+        <div class="report-header-actions">
+            <a href="{% url 'hospital_inventory' %}" class="back-btn"> Back to Inventory</a>
+            <button onclick="window.print()" class="print-btn"> Print Report</button>
+        </div>
+    </div>
+
+    <!-- STAT CARDS — same as inventory_list page -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h2>{{ total_units }}</h2>
+            <p>Total Blood Units</p>
+        </div>
+        <div class="stat-card green">
+            <h2>{{ available_units }}</h2>
+            <p>Available</p>
+        </div>
+        <div class="stat-card orange">
+            <h2>{{ reserved_units }}</h2>
+            <p>Reserved</p>
+        </div>
+        <div class="stat-card slate">
+            <h2>{{ collected_units }}</h2>
+            <p>Collected</p>
+        </div>
+        <div class="stat-card slate">
+            <h2>{{ tested_units }}</h2>
+            <p>Tested</p>
+        </div>
+        <div class="stat-card dark">
+            <h2>{{ expired_units }}</h2>
+            <p>Expired</p>
+        </div>
+        <div class="stat-card dark">
+            <h2>{{ discarded_units }}</h2>
+            <p>Discarded</p>
+        </div>
+        <div class="stat-card dark">
+            <h2>{{ low_stock_count }}</h2>
+            <p>Low Stock Types</p>
+        </div>
+        <div class="stat-card slate">
+            <h2>{{ out_of_stock_count }}</h2>
+            <p>Out of Stock Types</p>
+        </div>
+    </div>
+
+    <!-- LOW STOCK ALERT -->
+    {% if low_stock_count > 0 %}
+    <div class="low-banner">
+        <strong>⚠️ {{ low_stock_count }} blood type{{ low_stock_count|pluralize }} below 5 units:</strong>
+        {% for item in inventory %}
+            {% if item.units < 5 and item.units > 0 %}
+                <span class="low-tag">{{ item.blood_type }} — {{ item.units }} unit{{ item.units|pluralize }}</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- CROSSLINK -->
+    <div class="inv-link">
+        <span> These numbers match your <strong>Inventory List</strong> page exactly.</span>
+        <a href="{% url 'hospital_inventory' %}">Go to Inventory List →</a>
+    </div>
+
+    <!-- TABLE — available units per blood type -->
+    <div class="report-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Blood Type</th>
+                    <th>Available Units</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory %}
+                <tr>
+                    <td><strong>{{ item.blood_type }}</strong></td>
+                    <td>{{ item.units }}</td>
+                    <td>
+                        {% if item.units == 0 %}
+                            <span class="badge-out">Out of Stock</span>
+                        {% elif item.units < 5 %}
+                            <span class="badge-low">Low Stock</span>
+                        {% else %}
+                            <span class="badge-good">Good</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

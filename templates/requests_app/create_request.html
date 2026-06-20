@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.page-container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    padding:24px;
+    border-radius:16px;
+    margin-bottom:22px;
+}
+
+.title{
+    font-size:24px;
+    font-weight:700;
+}
+
+.subtitle{
+    color:#f3f4f6;
+    font-size:14px;
+    margin-top:4px;
+}
+
+.form-card{
+    background:#fff;
+    border:1px solid #b80000;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:0 4px 10px rgba(0,0,0,.05);
+}
+
+.form-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+}
+
+.form-title{
+    font-size:20px;
+    font-weight:700;
+    color:#111827;
+}
+
+.link-btn{
+    color:#dc2626;
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+}
+
+.link-btn:hover{
+    text-decoration:underline;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.form-group.full{
+    grid-column:span 2;
+}
+
+.form-label{
+    display:block;
+    font-size:14px;
+    font-weight:600;
+    color:#374151;
+    margin-bottom:7px;
+}
+
+.form-input,
+.form-select,
+.form-textarea{
+    width:100%;
+    border:1px solid #d1d5db;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:14px;
+    background:white;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus{
+    outline:none;
+    border-color:#dc2626;
+    box-shadow:0 0 0 3px rgba(220,38,38,.12);
+}
+
+.actions{
+    display:flex;
+    gap:12px;
+    margin-top:24px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    padding:11px 18px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+    border:none;
+    cursor:pointer;
+}
+
+.btn-primary{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#b91c1c;
+}
+
+.btn-secondary{
+    background:white;
+    color:#444;
+    border:1px solid #ddd;
+}
+
+.btn-secondary:hover{
+    background:#f3f4f6;
+}
+
+@media(max-width:768px){
+    .page-container{
+        padding:14px;
+    }
+
+    .header{
+        padding:18px;
+    }
+
+    .title{
+        font-size:20px;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:span 1;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+        text-align:center;
+    }
+}
+</style>
+
+<div class="page-container">
+
+    {% include "requests_app/patient_subnav.html" %}
+
+    <div class="header">
+        <div class="title">New Blood Request</div>
+        <div class="subtitle">Create a new blood request and choose the hospital</div>
+    </div>
+
+    <div class="form-card">
+
+        <div class="form-top">
+            <div class="form-title">Request Details</div>
+
+            <a href="{% url 'patient-requests' %}" class="link-btn">
+                <i class="fa-solid fa-list"></i>
+                My Requests
+            </a>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label class="form-label">Blood Type</label>
+
+                    <select name="blood_type" class="form-select">
+                        <option value="">Select Blood Type</option>
+                        <option value="A+" {% if data.blood_type == "A+" or defaults.blood_type == "A+" %}selected{% endif %}>A+</option>
+                        <option value="A-" {% if data.blood_type == "A-" or defaults.blood_type == "A-" %}selected{% endif %}>A-</option>
+                        <option value="B+" {% if data.blood_type == "B+" or defaults.blood_type == "B+" %}selected{% endif %}>B+</option>
+                        <option value="B-" {% if data.blood_type == "B-" or defaults.blood_type == "B-" %}selected{% endif %}>B-</option>
+                        <option value="AB+" {% if data.blood_type == "AB+" or defaults.blood_type == "AB+" %}selected{% endif %}>AB+</option>
+                        <option value="AB-" {% if data.blood_type == "AB-" or defaults.blood_type == "AB-" %}selected{% endif %}>AB-</option>
+                        <option value="O+" {% if data.blood_type == "O+" or defaults.blood_type == "O+" %}selected{% endif %}>O+</option>
+                        <option value="O-" {% if data.blood_type == "O-" or defaults.blood_type == "O-" %}selected{% endif %}>O-</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Units Needed</label>
+
+                    <input name="units_needed"
+                           type="number"
+                           min="1"
+                           value="{{ data.units_needed|default:defaults.units_needed }}"
+                           class="form-input">
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label">Hospital</label>
+
+                    <select name="hospital" class="form-select">
+                        <option value="">Choose Hospital</option>
+
+                        {% for h in hospitals %}
+                            <option value="{{ h.id }}"
+                                {% if data.hospital == h.id|stringformat:"s" %}selected{% endif %}>
+                                {{ h }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">City</label>
+
+                    <input name="city"
+                           value="{{ data.city|default:defaults.city }}"
+                           class="form-input"
+                           placeholder="City">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contact Phone</label>
+
+                    <input name="contact_phone"
+                           value="{{ data.contact_phone|default:defaults.contact_phone }}"
+                           class="form-input"
+                           placeholder="Phone">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Urgency</label>
+
+                    <select name="urgency" class="form-select">
+                        {% for val,label in urgency_choices %}
+                            <option value="{{ val }}"
+                                {% if data.urgency == val %}
+                                    selected
+                                {% elif not data.urgency and defaults.urgency == val %}
+                                    selected
+                                {% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Needed By</label>
+
+                    <input name="needed_by"
+                           type="datetime-local"
+                           value="{{ data.needed_by }}"
+                           class="form-input">
+                </div>
+
+                <div class="form-group full">
+                    <label class="form-label">Notes</label>
+
+                    <textarea name="notes"
+                              rows="4"
+                              class="form-textarea"
+                              placeholder="Any extra details...">{{ data.notes }}</textarea>
+                </div>
+
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary">
+                    Submit Request
+                </button>
+
+                <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">
+                    Back
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

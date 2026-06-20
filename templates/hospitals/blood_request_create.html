@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% block title %}Create Blood Request{% endblock %}
+
+{% block content %}
+
+<style>
+.page-container{
+    max-width:1100px;
+    margin:auto;
+}
+
+.header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    padding:24px;
+    border-radius:16px;
+    margin-bottom:20px;
+}
+
+.card{
+    background:white;
+    border:1px solid #b80000;
+    border-radius:16px;
+    padding:26px;
+    box-shadow:0 8px 25px rgba(0,0,0,.06);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.field.full{
+    grid-column:span 2;
+}
+
+label{
+    display:block;
+    font-weight:600;
+    margin-bottom:6px;
+    color:#374151;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:11px;
+    border:1px solid #ddd;
+    border-radius:9px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#dc2626;
+    outline:none;
+    box-shadow:0 0 0 3px rgba(220,38,38,.15);
+}
+
+.section-box{
+    background:#fff7f7;
+    border:1px solid #fecaca;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:20px;
+}
+
+.section-title{
+    color:#991b1b;
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:14px;
+}
+
+.radio-group{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+}
+
+.radio-option{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:white;
+    border:1px solid #e5e7eb;
+    padding:10px 16px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.profile-btn{
+    margin-top:10px;
+    background:#dc2626;
+    color:white;
+    padding:10px 16px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.profile-btn:hover{
+    background:#b91c1c;
+}
+
+.btn{
+    margin-top:22px;
+    background:#dc2626;
+    color:white;
+    padding:11px 18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn:hover{
+    background:#b91c1c;
+}
+
+.back{
+    margin-left:10px;
+    text-decoration:none;
+    color:#555;
+    font-weight:600;
+}
+
+.hidden{
+    display:none;
+}
+
+@media(max-width:800px){
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .field.full{
+        grid-column:span 1;
+    }
+
+    .btn,
+    .back{
+        display:block;
+        width:100%;
+        text-align:center;
+        margin-left:0;
+        margin-top:12px;
+    }
+}
+</style>
+
+<div class="page-container">
+
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <div class="header">
+        <h2>Create Blood Request</h2>
+        <p>Request blood for the hospital itself or for a specific patient.</p>
+    </div>
+
+    <div class="card">
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- REQUEST TYPE -->
+            <div class="section-box">
+
+                <div class="section-title">
+                    Request Type
+                </div>
+
+                <div class="radio-group">
+
+                    <label class="radio-option">
+                        <input type="radio"
+                               name="request_for"
+                               value="hospital"
+                               checked
+                               onchange="togglePatientField()">
+                        Hospital Request
+                    </label>
+
+                    <label class="radio-option">
+                        <input type="radio"
+                               name="request_for"
+                               value="patient"
+                               onchange="togglePatientField()">
+                        Patient Request
+                    </label>
+
+                </div>
+
+            </div>
+
+            <!-- NAME SECTION -->
+            <div class="section-box">
+
+                <div class="section-title">
+                    Request Owner
+                </div>
+
+                <div class="form-grid">
+
+                    <div>
+                        <label>Hospital Name</label>
+                        <input type="text"
+                               name="hospital_name"
+                               value="{{ hp.hospital_name }}"
+                               readonly>
+                    </div>
+
+                    <div id="patientField" class="hidden">
+                        <label>Patient Name</label>
+                        <input type="text"
+                               name="patient_name"
+                               placeholder="Enter patient name">
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label>Scheduled Donation Time</label>
+                {{ form.scheduled_time }}
+            </div>
+
+            <!-- ADDRESS SECTION -->
+            <div class="section-box">
+
+                <div class="section-title">
+                    Request Address
+                </div>
+
+                <button type="button"
+                        class="profile-btn"
+                        onclick="useProfileAddress()">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Use Profile Address
+                </button>
+
+                <div class="form-grid" style="margin-top:16px;">
+
+                    <div>
+                        <label>City</label>
+                        <input type="text"
+                               id="city"
+                               name="city"
+                               value="{{ hp.city }}"
+                               placeholder="City">
+                    </div>
+
+                    <div>
+                        <label>Address</label>
+                        <input type="text"
+                               id="address"
+                               name="address"
+                               value="{{ hp.address }}"
+                               placeholder="Address">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FORM FIELDS -->
+            <div class="form-grid">
+
+                {% for field in form %}
+
+                    {% if field.name != 'city' and field.name != 'hospital_address' and field.name != 'patient_name' %}
+
+                        <div class="{% if field.name == 'notes' %}field full{% endif %}">
+                            <label>{{ field.label }}</label>
+                            {{ field }}
+
+                            {% if field.errors %}
+                                <small style="color:#dc2626;">
+                                    {{ field.errors|striptags }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            </div>
+
+            <button type="submit" class="btn">
+                Create Request
+            </button>
+
+            <a href="{% url 'hospital_requests' %}" class="back">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+function togglePatientField(){
+
+    const selected =
+        document.querySelector('input[name="request_for"]:checked').value;
+
+    const patientField =
+        document.getElementById("patientField");
+
+    if(selected === "patient"){
+        patientField.classList.remove("hidden");
+    }else{
+        patientField.classList.add("hidden");
+    }
+}
+
+function useProfileAddress(){
+
+    const profileCity = "{{ hp.city|escapejs }}";
+    const profileAddress = "{{ hp.address|escapejs }}";
+
+    document.getElementById("city").value = profileCity;
+    document.getElementById("address").value = profileAddress;
+
+    alert("Profile address added successfully.");
+}
+</script>
+
+{% endblock %}

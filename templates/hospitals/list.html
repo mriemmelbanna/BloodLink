@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Hospitals</h2>
+
+<form method="get">
+    City: <input name="city">
+    <button>Search</button>
+</form>
+
+<ul>
+{% for h in hospitals %}
+    <li><a href="/hospitals/{{ h.id }}/">{{ h.name }} — {{ h.city }}</a></li>
+{% empty %}
+    <li>No hospitals found</li>
+{% endfor %}
+</ul>
+{% endblock %}

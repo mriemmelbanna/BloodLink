@@ -1,0 +1,603 @@
+{% extends "base.html" %}
+{% block title %}Find Blood{% endblock %}
+
+{% block content %}
+
+<style>
+  body{
+      overflow-x:hidden;
+      background:#f9fafb;
+  }
+  
+  /* =========================
+     PAGE TITLE
+  ========================= */
+  
+  .page-title{
+      font-size:26px;
+      font-weight:800;
+      color:#111827;
+  }
+  
+  .text-muted{
+      color:#6b7280;
+      margin-top:6px;
+      font-size:15px;
+  }
+  
+  /* =========================
+     FILTER
+  ========================= */
+  
+  .filter-box{
+      background:#fff;
+      border:1px solid #fee2e2;
+      border-radius:16px;
+      padding:16px;
+      display:flex;
+      gap:12px;
+      margin:18px 0 28px;
+      flex-wrap:wrap;
+      box-shadow:0 6px 18px rgba(0,0,0,.04);
+  }
+  
+  .filter-box select{
+      padding:10px 13px;
+      border:1px solid #ddd;
+      border-radius:10px;
+      outline:none;
+      background:white;
+      min-width:180px;
+  }
+  
+  .filter-box select:focus{
+      border-color:#dc2626;
+      box-shadow:0 0 0 3px rgba(220,38,38,.12);
+  }
+  
+  .filter-box button{
+      background:#dc2626;
+      color:white;
+      padding:10px 18px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+  }
+  
+  .filter-box button:hover{
+      background:#b91c1c;
+  }
+  
+  /* =========================
+     SECTIONS
+  ========================= */
+  
+  .section-title{
+      font-size:21px;
+      font-weight:800;
+      color:#b91c1c;
+      margin:30px 0 16px;
+  }
+  
+  /* =========================
+     GRID
+  ========================= */
+  
+  .grid{
+      display:grid;
+      gap:22px;
+      overflow:visible !important;
+  }
+  
+  .grid-2{
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    align-items:start;
+}
+  /* =========================
+     CARD
+  ========================= */
+  
+  .card{
+    background:#fff;
+    border:1px solid #e5e7eb;
+    border-radius:18px;
+    padding:20px;
+    display:block;
+    transition:.25s;
+    position:relative;
+    overflow:visible !important;
+    box-shadow:0 4px 14px rgba(0,0,0,.04);
+    height:auto;
+    min-height:0;
+}
+  .card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 12px 24px rgba(0,0,0,.08);
+      border-color:#fecaca;
+  }
+  
+  .card > div:first-child{
+      width:100%;
+  }
+  
+  .name{
+      font-weight:800;
+      font-size:17px;
+      color:#111827;
+      margin-bottom:8px;
+  }
+  
+  .clickable-name{
+      color:#dc2626;
+      text-decoration:underline;
+      cursor:pointer;
+  }
+  
+  .clickable-name:hover{
+      color:#b91c1c;
+  }
+  
+  /* =========================
+     INFO TAGS
+  ========================= */
+  
+  .info{
+      color:#6b7280;
+      font-size:14px;
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+  }
+  
+  .info span{
+      background:#f9fafb;
+      border:1px solid #f3f4f6;
+      border-radius:999px;
+      padding:6px 10px;
+      font-weight:600;
+  }
+  
+  /* =========================
+     DETAILS BOX
+  ========================= */
+  
+  .details-box{
+      display:none;
+      width:100%;
+      background:#fff;
+      border:1px solid #fecaca;
+      border-radius:16px;
+      padding:18px;
+      margin-top:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,.08);
+  }
+  
+  .details-box p{
+      font-size:15px;
+      line-height:1.7;
+      margin:8px 0;
+      color:#374151;
+  }
+  
+  .details-box strong{
+      color:#111827;
+      font-weight:800;
+  }
+  
+  /* =========================
+     REQUEST FORM
+  ========================= */
+  
+  .request-form{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      width:100%;
+      background:#fff7f7;
+      border:1px solid #fee2e2;
+      border-radius:14px;
+      padding:14px;
+  }
+  
+  .request-form input,
+  .request-form select{
+      width:100%;
+      padding:11px 12px;
+      border:1px solid #ddd;
+      border-radius:10px;
+      font-size:14px;
+      background:white;
+      font-weight:600;
+  }
+  
+  .request-form input:focus,
+  .request-form select:focus{
+      border-color:#dc2626;
+      box-shadow:0 0 0 3px rgba(220,38,38,.12);
+      outline:none;
+  }
+  
+  .request-form button{
+      grid-column:span 2;
+  }
+  
+  /* =========================
+     BUTTONS
+  ========================= */
+  
+  .btn-small{
+      display:block;
+      width:100%;
+      margin-top:8px;
+      background:#dc2626;
+      color:white;
+      padding:11px 14px;
+      border-radius:10px;
+      text-decoration:none;
+      border:none;
+      cursor:pointer;
+      font-size:14px;
+      text-align:center;
+      font-weight:800;
+  }
+  
+  .btn-small:hover{
+      background:#b91c1c;
+  }
+  
+  /* =========================
+     BADGES
+  ========================= */
+  
+  .badge{
+      display:inline-block;
+      margin-top:12px;
+      padding:7px 14px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+  }
+  
+  .badge-green{
+      background:#dcfce7;
+      color:#15803d;
+  }
+  
+  .empty-state{
+      color:#9ca3af;
+      font-size:14px;
+      font-style:italic;
+      background:white;
+      border:1px dashed #fecaca;
+      border-radius:14px;
+      padding:16px;
+  }
+  
+  /* =========================
+     MOBILE
+  ========================= */
+  
+  @media(max-width:768px){
+  
+      .page-title{
+          font-size:23px;
+      }
+  
+      .filter-box{
+          flex-direction:column;
+      }
+  
+      .filter-box select,
+      .filter-box button{
+          width:100%;
+      }
+  
+      .grid-2{
+          grid-template-columns:1fr;
+      }
+  
+      .request-form{
+          grid-template-columns:1fr;
+      }
+  
+      .request-form button{
+          grid-column:span 1;
+      }
+  }
+  </style>
+<div class="mb-8">
+  <div class="page-title">Find Blood</div>
+  <div class="text-muted">
+      Find available donors and hospitals
+  </div>
+</div>
+
+<form method="GET" class="filter-box">
+
+  <select name="city">
+    <option value="">All Cities</option>
+
+    {% for value, label in egypt_cities %}
+      <option value="{{ value }}" {% if selected_city == value %}selected{% endif %}>
+        {{ label }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <select name="blood_type">
+    <option value="">All Blood Types</option>
+
+    {% for bt in blood_types %}
+      <option value="{{ bt }}" {% if selected_blood == bt %}selected{% endif %}>
+        {{ bt }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <button type="submit">
+      Filter
+  </button>
+
+</form>
+
+<div class="section-title">
+    Available Donors
+</div>
+
+<div class="grid grid-2">
+
+  {% for d in donors %}
+  <div class="card">
+
+    <div>
+
+      <p class="name clickable-name"
+         data-toggle="donor"
+         data-id="{{ d.id }}">
+
+        {{ d.full_name|default:d.user.username }}
+
+      </p>
+
+      <p class="info">
+        <span>🩸 {{ d.blood_type|default:"Not set" }}</span>
+        <span>📍 {{ d.city|default:"Not set" }}</span>
+        <span>📞 {{ d.phone|default:"No phone" }}</span>
+      </p>
+
+      <div id="donor-{{ d.id }}"
+           class="details-box">
+
+        <p>
+          <strong>Address:</strong>
+          {{ d.address|default:"No address" }}
+        </p>
+
+        <p>
+          <strong>Phone:</strong>
+          {{ d.phone|default:"No phone" }}
+        </p>
+
+        {% if d.latitude and d.longitude %}
+
+          <a href="https://www.google.com/maps?q={{ d.latitude }},{{ d.longitude }}"
+             target="_blank"
+             class="btn-small">
+
+            Get Location
+
+          </a>
+
+        {% else %}
+
+          <p>No location available</p>
+
+        {% endif %}
+
+        <form method="post"
+              action="{% url 'request_donor' d.id %}"
+              class="request-form">
+
+          {% csrf_token %}
+
+          <input type="datetime-local" name="scheduled_time">
+
+<select name="blood_type" required>
+  <option value="">Select Blood Type</option>
+  {% for bt in blood_types %}
+    <option value="{{ bt }}" {% if bt == d.blood_type %}selected{% endif %}>{{ bt }}</option>
+  {% endfor %}
+</select>
+
+<input type="number"
+       name="required_units"
+       min="1"
+       value="1"
+       placeholder="Blood bags needed">
+
+          <select name="urgency">
+            <option value="NORMAL">Normal</option>
+            <option value="URGENT">Urgent</option>
+            <option value="CRITICAL">Critical</option>
+          </select>
+
+          <button type="submit" class="btn-small">
+            Send Request
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+    <span class="badge badge-green">
+        Available
+    </span>
+
+  </div>
+
+  {% empty %}
+
+    <p class="empty-state">
+        No available donors found.
+    </p>
+
+  {% endfor %}
+
+</div>
+
+<div class="section-title">
+    Available Hospitals
+</div>
+
+<div class="grid grid-2">
+
+  {% for h in hospitals %}
+  <div class="card">
+
+    <div>
+
+      <p class="name clickable-name"
+         data-toggle="hospital"
+         data-id="{{ h.id }}">
+
+        {{ h.hospital_name }}
+
+      </p>
+
+      <p class="info">
+        <span>🏥 Hospital</span>
+        <span>📍 {{ h.city|default:"Not set" }}</span>
+        <span>📞 {{ h.phone|default:"No phone" }}</span>
+      </p>
+
+      <div id="hospital-{{ h.id }}"
+           class="details-box">
+
+        <p>
+          <strong>Address:</strong>
+          {{ h.address|default:"No address" }}
+        </p>
+
+        <p>
+          <strong>Phone:</strong>
+          {{ h.phone|default:"No phone" }}
+        </p>
+
+        {% if h.latitude and h.longitude %}
+
+          <a href="https://www.google.com/maps?q={{ h.latitude }},{{ h.longitude }}"
+             target="_blank"
+             class="btn-small">
+
+            Get Location
+
+          </a>
+
+        {% else %}
+
+          <p>No location available</p>
+
+        {% endif %}
+
+        <form method="post"
+              action="{% url 'request_hospital' h.id %}"
+              class="request-form">
+
+          {% csrf_token %}
+
+          <input type="datetime-local" name="scheduled_time">
+
+<select name="blood_type" required>
+  <option value="">Select Blood Type</option>
+  {% for bt in blood_types %}
+    <option value="{{ bt }}" {% if bt == d.blood_type %}selected{% endif %}>{{ bt }}</option>
+  {% endfor %}
+</select>
+
+<input type="number"
+       name="required_units"
+       min="1"
+       value="1"
+       placeholder="Blood bags needed">
+
+          <select name="urgency">
+            <option value="NORMAL">Normal</option>
+            <option value="URGENT">Urgent</option>
+            <option value="CRITICAL">Critical</option>
+          </select>
+
+          <button type="submit" class="btn-small">
+            Send Request
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+    <span class="badge badge-green">
+        Registered
+    </span>
+
+  </div>
+
+  {% empty %}
+
+    <p class="empty-state">
+        No hospitals found.
+    </p>
+
+  {% endfor %}
+
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+  
+      const clickableNames = document.querySelectorAll(".clickable-name");
+  
+      clickableNames.forEach(function(name){
+  
+          name.addEventListener("click", function(e){
+  
+              e.preventDefault();
+              e.stopPropagation();
+  
+              const id = this.getAttribute("data-id");
+              const type = this.getAttribute("data-toggle");
+              const currentBox = document.getElementById(type + "-" + id);
+  
+              if(!currentBox) return;
+  
+              const wasOpen = currentBox.style.display === "block";
+  
+              document.querySelectorAll(".details-box").forEach(function(box){
+                  box.style.display = "none";
+              });
+  
+              currentBox.style.display = wasOpen ? "none" : "block";
+          });
+      });
+  
+      document.querySelectorAll(".details-box").forEach(function(box){
+          box.addEventListener("click", function(e){
+              e.stopPropagation();
+          });
+      });
+  
+      document.addEventListener("click", function(){
+          document.querySelectorAll(".details-box").forEach(function(box){
+              box.style.display = "none";
+          });
+      });
+  
+  });
+  </script>
+
+{% endblock %}

@@ -1,0 +1,752 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+.dashboard-container {
+    max-width: 1100px;
+    margin: auto;
+    
+}
+
+/* HEADER */
+.dashboard-header {
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    color: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h2 {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.dashboard-header p {
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+/* STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid #b80000;
+    text-align: center;
+    transition: 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.stat-card h4 {
+    font-size: 13px;
+    color: #666;
+}
+
+.stat-card p {
+    font-size: 26px;
+    font-weight: bold;
+    color: #dc2626;
+}
+
+/* ACTIONS */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.action-card {
+    background: #fff;
+    border: 1px solid #b80000;
+    border-radius: 14px;
+    padding: 18px;
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
+
+.action-card:hover {
+    background: #fff5f5;
+    transform: translateY(-2px);
+}
+
+.action-card h3 {
+    color: #b91c1c;
+    margin-bottom: 6px;
+}
+
+.action-card p {
+    font-size: 13px;
+    color: #666;
+}
+
+/* SECTIONS */
+.section {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid #b80000;
+    margin-bottom: 20px;
+}
+
+.section h3 {
+    margin-bottom: 12px;
+    color: #b91c1c;
+}
+
+.item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.item strong {
+    color: #333;
+}
+
+.item small {
+    color: #777;
+    display: block;
+    margin-top: 2px;
+}
+.inventory-card {
+    background: #ffffff;
+    border: 1px solid #b80000;
+    border-radius: 16px;
+    padding: 24px;
+    margin-top: 24px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+}
+
+.inventory-card h3 {
+    margin-bottom: 16px;
+    color: #111827;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inventory-table th {
+    background: #fff5f5;
+    color: #991b1b;
+    padding: 14px;
+    text-align: left;
+    font-weight: 700;
+}
+
+.inventory-table td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-badge.low {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-badge.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.good {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.request-link {
+    color: #dc2626;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* ================= MOBILE & TABLET IMPROVEMENTS ================= */
+
+/* TABLE SCROLL */
+.inventory-table {
+    min-width: 600px;
+}
+
+.inventory-card {
+    overflow-x: auto;
+}
+.table-wrapper{
+    width:100%;
+    overflow-x:auto;
+    border-radius:12px;
+}
+/* =========================
+   PATIENT REQUESTS
+========================= */
+
+.patient-requests-section{
+    margin-top:25px;
+}
+
+.section-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+}
+
+.section-header h3{
+    margin:0;
+}
+
+.request-count{
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.patient-table th{
+    background:#fff5f5;
+    color:#b91c1c;
+    font-weight:700;
+}
+
+.patient-table td{
+    vertical-align:middle;
+}
+
+.blood-badge{
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:6px 12px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:13px;
+}
+
+.urgency-badge{
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.urgency-normal{
+    background:#e0f2fe;
+    color:#0369a1;
+}
+
+.urgency-urgent{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.urgency-critical{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.action-buttons{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.accept-btn,
+.reject-btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.accept-btn{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.accept-btn:hover{
+    background:#bbf7d0;
+}
+
+.reject-btn{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.reject-btn:hover{
+    background:#fecaca;
+}
+
+.done-text{
+    color:#777;
+    font-size:13px;
+    font-weight:600;
+}
+
+.empty-row{
+    text-align:center;
+    color:#777;
+    padding:18px !important;
+}
+.done-btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    background:#dbeafe;
+    color:#075985;
+}
+
+.done-btn:hover{
+    background:#bfdbfe;
+}
+.collected-btn{
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+    background:#dcfce7;
+    color:#166534;
+    transition:.2s;
+    margin-left:8px;
+}
+
+.collected-btn:hover{
+    background:#bbf7d0;
+    transform:translateY(-1px);
+}
+
+
+
+/* TABLET */
+@media (max-width: 1024px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-header h2 {
+        font-size: 22px;
+    }
+
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .dashboard-container {
+        padding: 10px;
+    }
+
+    .dashboard-header {
+        padding: 18px;
+        text-align: center;
+    }
+
+    .dashboard-header h2 {
+        font-size: 20px;
+    }
+
+    .dashboard-header p {
+        font-size: 13px;
+    }
+
+    /* STATS */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card p {
+        font-size: 22px;
+    }
+
+    /* ACTIONS */
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .action-card {
+        padding: 16px;
+    }
+
+    /* TABLE */
+    .inventory-card {
+        padding: 16px;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    /* BUTTON */
+    .request-link {
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+}
+
+/* SMALL MOBILE */
+@media (max-width: 480px) {
+
+    .dashboard-header h2 {
+        font-size: 18px;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+    .inventory-table {
+        font-size: 12px;
+    }
+
+}
+</style>
+
+<div class="dashboard-container">
+
+    <!-- SUB NAV -->
+    {% include "hospitals/hospital_subnav.html" %}
+
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h2>Welcome, {{ hp.hospital_name }}</h2>
+        <p>Manage your blood system efficiently from one place</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h4>Total Units</h4>
+            <p>{{ stats.total }}</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>Available</h4>
+            <p>{{ stats.available }}</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>Requests</h4>
+            <p>{{ stats.requests }}</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>Alerts</h4>
+            <p>{{ notification_count }}</p>
+        </div>
+
+    </div>
+
+    <div class="inventory-card">
+    <h3> <strong>Blood Inventory Status</strong></h3>
+
+    <table class="inventory-table">
+        <thead>
+            <tr>
+                <th>Blood Type</th>
+                <th>Units</th>
+                <th>Status</th>
+                <th>Recommendation</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in inventory_summary %}
+            <tr>
+                <td><strong>{{ item.blood_type }}</strong></td>
+                <td>{{ item.count }}</td>
+                <td>
+                    <span class="status-badge {{ item.css_class }}">
+                        {{ item.level }}
+                    </span>
+                </td>
+                <td>{{ item.message }}</td>
+                <td>
+                    {% if item.level == "Low" %}
+                        <a href="{% url 'hospital_request_create' %}" class="request-link">
+                            Create Request
+                        </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<BR>
+
+    <!-- APPOINTMENTS -->
+<div class="section">
+    <h3>Upcoming Donation Appointments</h3>
+
+    <div class="table-wrapper">
+
+        <table class="inventory-table">
+
+            <thead>
+                <tr>
+                    <th>Donor</th>
+                    <th>Blood Type</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for appointment in appointments %}
+                <tr>
+
+                    <td>
+                        {{ appointment.donor.full_name|default:appointment.donor.user.username }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {% if appointment.status != "COLLECTED" %}
+                        <form method="post"
+                         action="{% url 'mark_appointment_collected' appointment.id %}"
+                        style="display:inline;">
+                          {% csrf_token %}
+                          <button type="submit" class="collected-btn">
+                             Collected
+                          </button>
+                        </form>
+                        {% else %}
+                        <span class="badge badge-green">Collected</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ appointment.blood_request.blood_type }}
+                    </td>
+
+                    <td>
+                        {{ appointment.appointment_time }}
+                    </td>
+
+                    <td>
+                        <span class="status-badge good">
+                            {{ appointment.status }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ appointment.donor.phone }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        No upcoming appointments.
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+<div class="section patient-requests-section">
+
+    <div class="section-header">
+        <h3>Patient Requests</h3>
+        <span class="request-count">
+            {{ patient_requests|length }} Requests
+        </span>
+    </div>
+
+    <div class="table-wrapper">
+
+        <table class="inventory-table patient-table">
+
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Blood Type</th>
+                    <th>Units</th>
+                    <th>Urgency</th>
+                    <th>Needed Date</th>
+                    <th>Status</th>
+                    <th style="width:180px;">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for r in patient_requests %}
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ r.patient_name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <span class="blood-badge">
+                            {{ r.blood_type }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ r.required_units }}
+                    </td>
+
+                    <td>
+                        <span class="urgency-badge urgency-{{ r.urgency|lower }}">
+                            {{ r.urgency }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ r.scheduled_time|default:"Not specified" }}
+                    </td>
+
+                    <td>
+                        <span class="status-badge status-{{ r.status|lower }}">
+                            {{ r.status }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if r.status == "PENDING" %}
+                    
+                            <div class="action-buttons">
+                                <form method="post" action="{% url 'accept_patient_request' r.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="accept-btn">Accept</button>
+                                </form>
+                    
+                                <form method="post" action="{% url 'reject_patient_request' r.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="reject-btn">Reject</button>
+                                </form>
+                            </div>
+                    
+                        {% elif r.status == "ACCEPTED" %}
+                    
+                            <form method="post" action="{% url 'done_patient_request' r.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="done-btn">Done</button>
+                            </form>
+                    
+                        {% else %}
+                    
+                            <span class="done-text">{{ r.status }}</span>
+                    
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="7" class="empty-row">
+                        No patient requests found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+    <!-- ACTIONS -->
+    <div class="actions-grid">
+
+        <a href="{% url 'hospital_inventory' %}" class="action-card">
+            <h3>Inventory</h3>
+            <p>Manage blood units</p>
+        </a>
+
+        <a href="{% url 'hospital_request_create' %}" class="action-card">
+            <h3>Create Request</h3>
+            <p>Request blood</p>
+        </a>
+
+        
+
+    </div>
+
+    <!-- ALERTS -->
+    <div class="section">
+        <h3>Recent Alerts</h3>
+
+        {% for alert in alerts %}
+            <div class="item">
+                <strong>{{ alert.message }}</strong>
+                <small>{{ alert.created_at }}</small>
+            </div>
+        {% empty %}
+            <p>No alerts</p>
+        {% endfor %}
+    </div>
+
+    <!-- REQUESTS -->
+    <div class="section">
+        <h3>Recent Requests</h3>
+
+        {% for req in requests %}
+            <div class="item">
+                <strong>{{ req.blood_type }} - {{ req.required_units }} units</strong>
+                <small>Status: {{ req.status }}</small>
+            </div>
+        {% empty %}
+            <p>No requests</p>
+        {% endfor %}
+    </div>
+   
+</div>
+
+{% endblock %}

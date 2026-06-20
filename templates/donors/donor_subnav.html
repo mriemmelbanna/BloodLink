@@ -1,0 +1,102 @@
+<style>
+/* =========================
+   SUB NAV STYLE
+========================= */
+
+.subnav {
+    background: #ffffff;
+    border: 1px solid #b80000;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 20px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.subnav-link {
+    padding: 8px 14px;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    color: #333;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.subnav-link:hover {
+    background: #f3f4f6;
+    transform: translateY(-1px);
+}
+
+/* Active */
+.subnav-link.active {
+    background: #dc2626;
+    color: white;
+}
+
+/* Icons */
+.icon {
+    font-size: 14px;
+    color: #e41212;
+}
+
+/* Active icon */
+.subnav-link.active .icon {
+    color: white;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 768px) {
+    .subnav {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .subnav-link {
+        width: 100%;
+    }
+}
+</style>
+
+
+<div class="subnav">
+
+  <a href="{% url 'donor_dashboard' %}"
+     class="subnav-link {% if active_tab == 'donor_dashboard' %}active{% endif %}">
+    <i class="fa-solid fa-gauge icon"></i>
+    Dashboard
+  </a>
+
+  <a href="{% url 'donor_profile' %}"
+     class="subnav-link {% if active_tab == 'donor_profile' %}active{% endif %}">
+    <i class="fa-regular fa-id-card icon"></i>
+    Profile
+  </a>
+
+  <a href="{% url 'donor_alerts' %}"
+     class="subnav-link {% if active_tab == 'donor_alerts' %}active{% endif %}">
+    <i class="fa-regular fa-bell icon"></i>
+    Alerts
+  </a>
+
+  <a href="{% url 'donor_settings' %}"
+     class="subnav-link {% if active_tab == 'donor_settings' %}active{% endif %}">
+    <i class="fa-solid fa-sliders icon"></i>
+    Availability
+  </a>
+
+</div>

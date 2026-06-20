@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-body">
+
+    <h2>Update Blood Unit</h2>
+
+    <p><strong>Unit ID:</strong> {{ unit.unit_id }}</p>
+    <p><strong>Blood Type:</strong> {{ unit.blood_type }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Status</label>
+        <select name="status" class="form-control">
+            <option value="AVAILABLE">Available</option>
+            <option value="RESERVED">Reserved</option>
+            <option value="EXPIRED">Expired</option>
+            <option value="DISCARDED">Discarded</option>
+        </select>
+
+        <br>
+
+        <button type="submit" class="btn btn-red">
+            Save
+        </button>
+
+        <a href="{% url 'hospital_inventory' %}" class="btn btn-light">
+            Cancel
+        </a>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+.page-container{
+    max-width:1100px;
+    margin:auto;
+    padding:24px 16px;
+}
+
+/* HEADER */
+.page-header{
+    background:linear-gradient(135deg,#dc2626,#991b1b);
+    color:white;
+    padding:24px;
+    border-radius:20px;
+    margin-bottom:22px;
+}
+
+.page-title{
+    font-size:24px;
+    font-weight:700;
+}
+
+.page-subtitle{
+    margin-top:5px;
+    color:#f3f4f6;
+    font-size:14px;
+}
+
+/* MAIN CARD */
+.main-card{
+    background:#fff;
+    border:1px solid #b80000;
+    border-radius:20px;
+    padding:24px;
+    box-shadow:0 8px 25px rgba(0,0,0,.05);
+}
+
+/* TOP */
+.request-top{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.request-title{
+    font-size:22px;
+    font-weight:700;
+    color:#111827;
+}
+
+.request-meta{
+    color:#6b7280;
+    font-size:14px;
+    margin-top:8px;
+}
+
+.request-date{
+    color:#9ca3af;
+    font-size:13px;
+    margin-top:8px;
+}
+
+/* STATUS BOX */
+.status-box{
+    text-align:right;
+}
+
+.label{
+    font-size:12px;
+    color:#6b7280;
+    margin-bottom:4px;
+}
+
+.value{
+    font-size:15px;
+    font-weight:700;
+    color:#111827;
+}
+
+.badge{
+    display:inline-block;
+    margin-top:6px;
+    padding:5px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.badge-critical{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.badge-urgent{
+    background:#fef3c7;
+    color:#b45309;
+}
+
+.badge-normal{
+    background:#f3f4f6;
+    color:#374151;
+}
+
+.badge-open{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.badge-cancelled{
+    background:#f3f4f6;
+    color:#6b7280;
+}
+
+.badge-fulfilled{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+/* INFO CARDS */
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:16px;
+    margin-top:24px;
+}
+
+.info-card{
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:18px;
+    background:#fff;
+}
+
+.info-title{
+    font-size:12px;
+    color:#6b7280;
+    margin-bottom:8px;
+}
+
+.info-value{
+    font-size:16px;
+    font-weight:600;
+    color:#111827;
+}
+
+/* NOTES */
+.notes-card{
+    margin-top:20px;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    padding:20px;
+}
+
+.notes-title{
+    font-size:13px;
+    color:#6b7280;
+    margin-bottom:10px;
+}
+
+.notes-body{
+    color:#111827;
+    line-height:1.7;
+    white-space:pre-wrap;
+}
+
+/* BUTTONS */
+.actions{
+    display:flex;
+    gap:12px;
+    margin-top:28px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    padding:11px 18px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s;
+    text-decoration:none;
+    border:none;
+    cursor:pointer;
+}
+
+.btn-back{
+    border:1px solid #d1d5db;
+    background:white;
+    color:#111827;
+}
+
+.btn-back:hover{
+    background:#f9fafb;
+}
+
+.btn-cancel{
+    background:#111827;
+    color:white;
+}
+
+.btn-cancel:hover{
+    opacity:.9;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+
+    .page-header{
+        padding:18px;
+    }
+
+    .page-title{
+        font-size:20px;
+    }
+
+    .request-title{
+        font-size:18px;
+    }
+
+    .request-top{
+        flex-direction:column;
+    }
+
+    .status-box{
+        text-align:left;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+        text-align:center;
+    }
+}
+
+</style>
+
+<div class="page-container">
+
+    {% include "requests_app/patient_subnav.html" with active_tab="patient_requests" %}
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <div class="page-title">
+            Blood Request Details
+        </div>
+
+        <div class="page-subtitle">
+            Review your blood request information and status
+        </div>
+
+    </div>
+
+    <!-- MAIN CARD -->
+    <div class="main-card">
+
+        <div class="request-top">
+
+            <div>
+
+                <div class="request-title">
+                    Request #{{ req.id }} • {{ req.blood_type }} • {{ req.units_needed }} unit(s)
+                </div>
+
+                <div class="request-meta">
+                    <i class="fa-regular fa-hospital"></i>
+                    {{ req.hospital }}
+
+                    <span style="margin:0 10px;">•</span>
+
+                    <i class="fa-solid fa-location-dot"></i>
+                    {{ req.city }}
+                </div>
+
+                <div class="request-date">
+                    Created: {{ req.created_at|date:"M d, Y - h:i A" }}
+                </div>
+
+            </div>
+
+            <div class="status-box">
+
+                <div class="label">Urgency</div>
+
+                {% if req.urgency == "CRITICAL" %}
+                    <div class="badge badge-critical">CRITICAL</div>
+
+                {% elif req.urgency == "URGENT" %}
+                    <div class="badge badge-urgent">URGENT</div>
+
+                {% else %}
+                    <div class="badge badge-normal">NORMAL</div>
+                {% endif %}
+
+                <div class="label" style="margin-top:14px;">Status</div>
+
+                {% if req.status == "OPEN" %}
+                    <div class="badge badge-open">OPEN</div>
+
+                {% elif req.status == "FULFILLED" %}
+                    <div class="badge badge-fulfilled">FULFILLED</div>
+
+                {% else %}
+                    <div class="badge badge-cancelled">CANCELLED</div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- INFO -->
+        <div class="info-grid">
+
+            <div class="info-card">
+
+                <div class="info-title">
+                    Contact Phone
+                </div>
+
+                <div class="info-value">
+                    {{ req.contact_phone|default:"—" }}
+                </div>
+
+            </div>
+
+            <div class="info-card">
+
+                <div class="info-title">
+                    Needed By
+                </div>
+
+                <div class="info-value">
+
+                    {% if req.needed_by %}
+                        {{ req.needed_by|date:"M d, Y - h:i A" }}
+                    {% else %}
+                        —
+                    {% endif %}
+
+                </div>
+
+                {% if req.is_expired %}
+                    <div style="margin-top:8px;">
+                        <span class="badge badge-critical">
+                            Expired
+                        </span>
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- NOTES -->
+        <div class="notes-card">
+
+            <div class="notes-title">
+                Notes
+            </div>
+
+            <div class="notes-body">
+                {{ req.notes|default:"—" }}
+            </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+
+            <a href="{% url 'patient-requests' %}" class="btn btn-back">
+                Back
+            </a>
+
+            {% if req.status == "OPEN" %}
+
+            <form method="post" action="{% url 'cancel_request' req.id %}">
+
+                {% csrf_token %}
+
+                <button class="btn btn-cancel">
+                    Cancel Request
+                </button>
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

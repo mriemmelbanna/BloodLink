@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+{% block title %}Donor Profile{% endblock %}
+
+{% block content %}
+
+<style>
+/* Cards */
+.card {
+  background: #fff;
+  border: 1px solid #b80000;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card section-header .a{
+   background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* Layout */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  
+}
+
+.grid {
+  display: grid;
+  gap: 15px;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.full {
+  grid-column: span 2;
+}
+
+.full-3 {
+  grid-column: span 3;
+}
+
+/* Labels */
+.label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+}
+.header {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+  color: white;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.header .text-muted {
+  color: #f3f4f6;
+  font-size: 14px;
+}
+
+/* Mobile */
+@media (max-width: 768px){
+  .header{
+    text-align: left;
+  }
+}
+.h1{font-size: 22px;
+  font-weight: 600;}
+
+
+/* Input display */
+.input-box {
+  background: #f9fafb;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon {
+  color: #e41212;
+}
+
+/* Text */
+.text-muted {
+  color: #777;
+  font-size: 14px;
+}
+
+/* Button */
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  background: white;
+}
+
+.btn:hover {
+  background: #f3f4f6;
+}
+
+.btn{
+  background: #dc2626;
+  color: white;
+  border: none;
+}
+
+.btn:hover {
+  background: #b91c1c;
+}
+/* Edit link */
+.edit-link {
+  color: red;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.edit-link:hover {
+  color: darkred;
+}
+/* =========================
+   📱 MOBILE
+========================= */
+@media (max-width: 768px){
+   .header{
+    text-align: left;
+  }
+
+  h1{
+    font-size:22px;
+  }
+
+  h2{
+    font-size:18px;
+  }
+
+  .section-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  /* grids تبقى عمود واحد */
+  .grid-2,
+  .grid-3{
+    grid-template-columns:1fr;
+  }
+
+  .full,
+  .full-3{
+    grid-column:span 1;
+  }
+
+  .card{
+    padding:15px;
+  }
+
+  .input-box{
+    padding:10px;
+    font-size:14px;
+  }
+
+  .label{
+    font-size:12px;
+  }
+
+  .btn{
+    width:100%;
+    text-align:center;
+  }
+
+}
+
+
+/* =========================
+   📱 TABLET
+========================= */
+@media (min-width: 769px) and (max-width: 1024px){
+
+  .grid-3{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .full-3{
+    grid-column:span 2;
+  }
+
+  .section-header{
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+}
+</style>
+
+<div class="mb-6">
+  {% include "donors/donor_subnav.html" with active_tab="dashboard" %}
+</div>
+<div class="header">
+
+  <div>
+    <div class="title">
+      Donor Profile
+    </div>
+
+    <div class="text-muted">
+      Manage your personal information and eligibility status
+    </div>
+  </div>
+
+</div>
+
+<!-- Personal Info -->
+<div class="card">
+  <div class="section-header">
+    
+    <h2><i class="fa-regular fa-user icon"></i>  Personal Information</h2>
+    <a href="{% url 'donor_profile_edit' %}" class="edit-link">Edit</a>
+  </div>
+
+  <div class="grid grid-2">
+
+    <div>
+      <label class="label">Full Name</label>
+      <div class="input-box with-icon">
+        <i class="fa-regular fa-user icon"></i>
+        <span>{{ profile.full_name|default:"—" }}</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="label">Email</label>
+      <div class="input-box with-icon">
+        <i class="fa-regular fa-envelope icon"></i>
+        <span>{{ user.email|default:"—" }}</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="label">Phone Number</label>
+      <div class="input-box with-icon">
+        <i class="fa-regular fa-phone icon"></i>
+        <span>{{ profile.phone|default:"—" }}</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="label">Date of Birth</label>
+      <div class="input-box space-between"> 
+        <span id="Date of Birth">{{ profile.date_of_birth }}</span> 
+        <i class="fa-regular fa-calendar icon"></i>
+       
+      </div>
+        
+      
+ 
+        
+      </div>
+    </div>
+
+    <div class="full">
+      <label class="label">Address</label>
+      <div class="input-box with-icon">
+        <i class="fa-solid fa-location-dot icon"></i>
+        <span>{{ profile.address|default:"—" }}</span>
+      </div>
+    </div>
+    <div>
+  <label class="label">City</label>
+  <div class="input-box with-icon">
+    <i class="fa-solid fa-city icon"></i>
+    <span>{{ profile.city|default:"—" }}</span>
+  </div>
+</div>
+  </div>
+  
+</div>
+<div class="card">
+
+  <div class="section-header">
+    <h2><i class="fa-solid fa-map-location-dot icon"></i> Location</h2>
+  </div>
+
+  {% if profile.latitude and profile.longitude %}
+
+    <a class="btn" target="_blank"
+       href="https://www.google.com/maps?q={{ profile.latitude }},{{ profile.longitude }}">
+      Open in Google Maps
+    </a>
+
+  {% else %}
+    <p class="text-muted">No location added yet</p>
+  {% endif %}
+
+</div>
+
+<!-- Medical Info -->
+<div class="card">
+  <h2><i class="fa-solid fa-heart-pulse icon"></i>  Medical Information</h2>
+
+  <div class="grid grid-3">
+
+    <div>
+      <label class="label">Blood Type</label>
+      <div class="input-box">
+        {{ profile.blood_type|default:"—" }}
+      </div>
+    </div>
+
+    <div>
+      <label class="label">Weight (kg)</label>
+      <div class="input-box">
+        {{ profile.weight_kg|default:"—" }}
+      </div>
+    </div>
+
+    <div>
+      <label class="label">Last Donation Date</label>
+      <div class="input-box space-between">
+        <span>
+          {% if profile.last_donation_date %}
+            {{ profile.last_donation_date }}
+          {% else %}
+            —
+          {% endif %}
+        </span>
+        <i class="fa-regular fa-calendar icon"></i>
+      </div>
+    </div>
+
+    <div class="full-3">
+      <label class="label">Medical Conditions</label>
+      <div class="input-box">
+        {{ profile.medical_conditions|default:"None" }}
+      </div>
+    </div>
+
+    <div class="full-3">
+      <label class="label">Allergies</label>
+      <div class="input-box">
+        {{ profile.allergies|default:"None" }}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="card section-header" style="border: 1px solid #b80000;">
+  <div>
+    <h2>Availability Settings</h2>
+    <p class="text-muted">Manage notifications distance and availability</p>
+  </div>
+
+  <a href="{% url 'donor_settings' %}" class="btn">
+    Manage
+  </a>
+</div>
+
+{% endblock %}
