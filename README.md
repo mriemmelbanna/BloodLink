@@ -25,6 +25,13 @@ Finding the right blood donor at the right time is a critical challenge. BloodLi
 
 ---
 
+## 📸 Screenshots
+
+![Home Page](home.png)
+![How It Works](how-it-works.png)
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
@@ -82,5 +89,9 @@ Then open your browser at `http://127.0.0.1:8000` 🎉
 
 **Mariem Essam** — MIS Graduate | Full Stack Developer in Progress
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/mariem-essam/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mriemmelbanna)
+
+---
 
 <p align="center">Made with ❤️ to save lives 🩸</p>
